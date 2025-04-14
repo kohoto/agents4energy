@@ -120,33 +120,46 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         ],
     }))
 
-    // This is a way to prevent a circular dependency error when interacting with the well fiel drive bucket
-
+    // DLQ(Dead Letter Queue)の作成
+    // 処理に失敗したメッセージを保管するためのキューです
     const pdfDlQueue = new sqs.Queue(scope, 'PdfToYamlDLQ', {
-        retentionPeriod: cdk.Duration.days(14), // Keep failed messages for 14 days
+        // 失敗したメッセージを14日間保持します
+        // これにより、障害調査のための十分な時間が確保できます
+        retentionPeriod: cdk.Duration.days(14),
     });
 
-    // Create the main queue for processing
+    // メインの処理キューの作成
+    // PDFファイルの処理要求を受け付けるメインのキューです
     const pdfProcessingQueue = new sqs.Queue(scope, 'PdfToYamlQueue', {
-        visibilityTimeout: cdk.Duration.minutes(16), // Should match or exceed lambda timeout
+        // メッセージの可視性タイムアウトを16分に設定
+        // Lambda関数の実行時間制限と合わせて設定することで、
+        // 処理中のメッセージが他のコンシューマーに渡されることを防ぎます
+        visibilityTimeout: cdk.Duration.minutes(16),
+
+        // Dead Letter Queue(DLQ)の設定
         deadLetterQueue: {
             queue: pdfDlQueue,
-            maxReceiveCount: 3 // Number of retries before sending to DLQ
+            // メッセージの処理を3回試行して失敗した場合、
+            // DLQに移動させます
+            maxReceiveCount: 3
         },
     });
 
-    // Add a queue policy to enforce HTTPS
+    // セキュリティポリシーの追加
+    // 両方のキュー(メインキューとDLQ)に対して、
+    // HTTPSでの通信のみを許可するセキュリティ設定を行います
     for (const queue of [pdfDlQueue, pdfProcessingQueue]) {
         queue.addToResourcePolicy(
             new iam.PolicyStatement({
-                sid: 'DenyUnsecureTransport',
-                effect: iam.Effect.DENY,
-                principals: [new iam.AnyPrincipal()],
+                sid: 'DenyUnsecureTransport',  // ポリシーの一意の識別子
+                effect: iam.Effect.DENY,       // 非HTTPSアクセスを拒否
+                principals: [new iam.AnyPrincipal()],  // すべてのユーザーに適用
                 actions: [
-                    'sqs:*'
+                    'sqs:*'  // すべてのSQSアクション
                 ],
-                resources: [queue.queueArn],
+                resources: [queue.queueArn],  // このキューのARNを指定
                 conditions: {
+                    // HTTPSを使用していない場合にアクセスを拒否
                     'Bool': {
                         'aws:SecureTransport': 'false'
                     }
@@ -157,9 +170,14 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
 
 
     // Grant the Lambda permission to read from the queue
+    // SQSキューからLambda関数がメッセージを読み取る権限を付与
     pdfProcessingQueue.grantConsumeMessages(convertPdfToYamlFunction);
 
     // Add SQS as trigger for Lambda
+    // LambdaにSQSキューをトリガーとして設定
+    // - batchSize: 一度に処理するメッセージの最大数を10に設定
+    // - maxBatchingWindow: メッセージをバッチ処理する待ち時間を10秒に設定
+    // - maxConcurrency: 同時に実行できるバッチの最大数を90に設定
     convertPdfToYamlFunction.addEventSource(new lambdaEvent.SqsEventSource(pdfProcessingQueue, {
         batchSize: 10,
         maxBatchingWindow: cdk.Duration.seconds(10),
@@ -167,8 +185,13 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
     }));
 
     const wellFileDriveBucket = s3.Bucket.fromBucketName(scope, 'ExistingBucket', props.s3Bucket.bucketName);
+    // 既存のS3バケットを参照
+    const wellFileDriveBucket = s3.Bucket.fromBucketName(scope, 'XXXXXXXXXXXXXX', props.s3Bucket.bucketName);
 
     // Now update the S3 notification to send to SQS instead of directly to Lambda
+    // PDFファイル(.pdf)がアップロードされた時にSQSキューにメッセージを送信するように設定
+    // - prefix: production-agent/well-files/配下のファイルのみを対象
+    // - suffix: .pdfファイルのみを対象
     wellFileDriveBucket.addEventNotification(
         s3.EventType.OBJECT_CREATED,
         new s3n.SqsDestination(pdfProcessingQueue),
@@ -179,6 +202,9 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
     );
 
     // Now update the S3 notification to send to SQS instead of directly to Lambda
+    // PDFファイル(.PDF)がアップロードされた時にSQSキューにメッセージを送信するように設定
+    // - prefix: production-agent/well-files/配下のファイルのみを対象
+    // - suffix: .PDFファイルのみを対象(大文字拡張子対応)
     wellFileDriveBucket.addEventNotification(
         s3.EventType.OBJECT_CREATED,
         new s3n.SqsDestination(pdfProcessingQueue),
@@ -188,6 +214,7 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         }
     );
 
+    // 以下はコメントアウトされた直接Lambda呼び出しの古い実装
     // //When a new pdf is uploaded to the well file drive, transform it into YAML and save it back to the well file drive
     // // Add S3 event notification
     // wellFileDriveBucket.addEventNotification(
@@ -200,7 +227,9 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
     // );
 
     //https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.DatabaseCluster.html
+    // Aurora PostgreSQLデータベースクラスターを作成
     const hydrocarbonProductionDb = new rds.DatabaseCluster(scope, 'A4E-HydrocarbonProdDb', {
+        // PostgreSQL 16.4を使用
         engine: rds.DatabaseClusterEngine.auroraPostgres({
             version: rds.AuroraPostgresEngineVersion.VER_16_4,
         }),
@@ -211,19 +240,33 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         writer: rds.ClusterInstance.serverlessV2('writer'),
         serverlessV2MinCapacity: 0.5,
         serverlessV2MaxCapacity: 2,
+        enableDataApi: true,              // データAPIを有効化
+        iamAuthentication: true,          // IAM認証を有効化
+        storageEncrypted: true,          // ストレージの暗号化を有効化
+        writer: rds.ClusterInstance.serverlessV2('writer'),  // Serverless V2インスタンスを使用
+        serverlessV2MinCapacity: 0.5,    // 最小キャパシティを0.5 ACUに設定
+        serverlessV2MaxCapacity: 2,       // 最大キャパシティを2 ACUに設定
         vpcSubnets: {
             subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+            subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,  // プライベートサブネットに配置
         },
         vpc: props.vpc,
         port: 5432,
         removalPolicy: cdk.RemovalPolicy.DESTROY
+        port: 5432,                       // PostgreSQLのデフォルトポート
+        removalPolicy: cdk.RemovalPolicy.DESTROY  // スタック削除時にDBも削除
     });
+
+    // データベースのシークレット(パスワード等)のローテーションスケジュールを設定
+    // 30日ごとに自動的にシークレットをローテーション
     hydrocarbonProductionDb.secret?.addRotationSchedule('RotationSchedule', {
         hostedRotation: secretsmanager.HostedRotation.postgreSqlSingleUser({
             functionName: `SecretRotationProdDb-${stackUUID}`
           }),
         automaticallyAfter: cdk.Duration.days(30)
     });
+
+    // ライターノードの参照を取得(後続の処理で使用)
     const writerNode = hydrocarbonProductionDb.node.findChild('writer').node.defaultChild as rds.CfnDBInstance
 
     //Allow inbound traffic from the default SG in the VPC
