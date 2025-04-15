@@ -185,8 +185,6 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
     }));
 
     const wellFileDriveBucket = s3.Bucket.fromBucketName(scope, 'ExistingBucket', props.s3Bucket.bucketName);
-    // 既存のS3バケットを参照
-    const wellFileDriveBucket = s3.Bucket.fromBucketName(scope, 'XXXXXXXXXXXXXX', props.s3Bucket.bucketName);
 
     // Now update the S3 notification to send to SQS instead of directly to Lambda
     // PDFファイル(.pdf)がアップロードされた時にSQSキューにメッセージを送信するように設定
