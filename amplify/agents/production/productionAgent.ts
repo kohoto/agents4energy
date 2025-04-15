@@ -232,12 +232,6 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
             version: rds.AuroraPostgresEngineVersion.VER_16_4,
         }),
         defaultDatabaseName: defaultProdDatabaseName,
-        enableDataApi: true,
-        iamAuthentication: true,
-        storageEncrypted: true,
-        writer: rds.ClusterInstance.serverlessV2('writer'),
-        serverlessV2MinCapacity: 0.5,
-        serverlessV2MaxCapacity: 2,
         enableDataApi: true,              // データAPIを有効化
         iamAuthentication: true,          // IAM認証を有効化
         storageEncrypted: true,          // ストレージの暗号化を有効化
@@ -245,12 +239,9 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         serverlessV2MinCapacity: 0.5,    // 最小キャパシティを0.5 ACUに設定
         serverlessV2MaxCapacity: 2,       // 最大キャパシティを2 ACUに設定
         vpcSubnets: {
-            subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
             subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,  // プライベートサブネットに配置
         },
         vpc: props.vpc,
-        port: 5432,
-        removalPolicy: cdk.RemovalPolicy.DESTROY
         port: 5432,                       // PostgreSQLのデフォルトポート
         removalPolicy: cdk.RemovalPolicy.DESTROY  // スタック削除時にDBも削除
     });
