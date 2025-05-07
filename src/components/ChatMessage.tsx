@@ -141,7 +141,7 @@ export default memo(function Messages(
                                                 id: "like",
                                                 iconName: "thumbs-up",
                                                 pressedIconName: "thumbs-up-filled",
-                                                text: "Helpful",
+                                                text: "役に立った",
                                                 pressed: message.userFeedback === 'like'
                                             },
                                             {
@@ -149,7 +149,7 @@ export default memo(function Messages(
                                                 id: "dislike",
                                                 iconName: "thumbs-down",
                                                 pressedIconName: "thumbs-down-filled",
-                                                text: "Not helpful",
+                                                text: "役に立たない",
                                                 pressed: message.userFeedback === 'dislike',
                                                 // disabled: true
                                             }
@@ -159,7 +159,7 @@ export default memo(function Messages(
                                         type: "icon-button",
                                         id: "copy",
                                         iconName: "copy",
-                                        text: "Copy to Clipboard",
+                                        text: "コピー",
                                         popoverFeedback: (
                                             <StatusIndicator type="success">
                                                 Copied to clipboard
@@ -170,7 +170,7 @@ export default memo(function Messages(
                                         type: "icon-button",
                                         id: "glossary",
                                         iconName: "transcript",
-                                        text: "Glossary",
+                                        text: "用語集",
                                         popoverFeedback:
                                             <StatusIndicator
                                                 type={(message.id && glossaryBlurbs && message.id in glossaryBlurbs && glossaryBlurbs[message.id].length > 1) ? 'success' : 'loading'}

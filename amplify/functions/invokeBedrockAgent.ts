@@ -27,7 +27,7 @@ export const handler: Schema["invokeBedrockAgent"]["functionHandler"] = async (e
         variables: {
             chatSessionId: event.arguments.chatSessionId,
             index: 0,
-            chunk: 'Invoking Amazon Bedrock Agent...'
+            chunk: 'Amazon Bedrock Agent を呼び出しています...'
         }
     }).catch((error) => {
         console.error('Initial Invoke error: ', error)

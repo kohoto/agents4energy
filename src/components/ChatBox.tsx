@@ -420,7 +420,7 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                     header={
                         <>
                             <Header variant="h3">Generative AI chat - {chatSession?.aiBotInfo?.aiBotName}</Header>
-                            <span className='prompt-label'>Try one of these example prompts</span>
+                            <span className='prompt-label'>チャット入力例を試す</span>
                             <ButtonDropdown
                                 ariaLabel="Suggested Prompts"
                                 items={[
@@ -448,11 +448,11 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                             stretch
                             constraintText={
                                 <>
-                                    Use of this service is subject to the{' '}
-                                    <Link href="#" external variant="primary" fontSize="inherit">
-                                        AWS Responsible AI Policy
+                                    このサービスの利用には {' '}
+                                    <Link href="https://d1.awsstatic.com/legal/ai-responsible-ai-policy/AWS_Responsible_AI_Policy_2023.09.28_JA-JP.pdf" external variant="primary" fontSize="inherit">
+                                        AWS 責任あるAIポリシー
                                     </Link>
-                                    .
+                                    が適用されます。
                                 </>
                             }
                         >
@@ -468,7 +468,7 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                                 actionButtonAriaLabel={isGenAiResponseLoading ? 'Send message button - suppressed' : 'Send message'}
                                 actionButtonIconName="send"
                                 ariaLabel={isGenAiResponseLoading ? 'Prompt input - suppressed' : 'Prompt input'}
-                                placeholder="Ask a question"
+                                placeholder="質問を入力してください..."
                                 autoFocus
                             />
                         </FormField>

@@ -252,7 +252,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                 disableContentPaddings
                 tabs={[
                     {
-                        label: "Chat Agents",
+                        label: "チャット",
                         id: "first",
                         content:
                             <AppLayout
@@ -331,7 +331,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                                     <SideNavigation
                                         header={{
                                             href: '#',
-                                            text: 'Sessions',
+                                            text: 'チャット履歴',
                                         }}
                                         items={groupedChatSessions}
                                     />
@@ -387,7 +387,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                             />
                     },
                     {
-                        label: "Glossary",
+                        label: "用語集",
                         id: "second",
                         content:
                             <div className='glossary-container'>
@@ -403,7 +403,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                             </div>,
                     },
                     {
-                        label: "Files",
+                        label: "ファイル",
                         id: "fourth",
                         content:
                             <div className='links-container'>

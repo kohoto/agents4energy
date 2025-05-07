@@ -29,7 +29,7 @@ const TopNavBar = () => {
       <TopNavigation
         identity={{
           href: "/",
-          title: "Agents4Energy - Sample",
+          title: "Agents4Energy - 日本語版",
           logo: {
             src: logoSmallTopNavigation.src,
             alt: "A4E"
@@ -38,14 +38,14 @@ const TopNavBar = () => {
         utilities={[
           ...(authStatus === 'authenticated' ? [{
             type: "menu-dropdown" as const,
-            text: userAttributes?.email || "Customer Name",
+            text: userAttributes?.email || "ユーザー",
             // description: userAttributes?.email || "email@example.com",
             iconName: "user-profile" as const,
             onItemClick: (item: { detail: { id: string } }) => {
               if (item.detail.id === 'signout') signOut()
             },
             items: [
-              { id: "signout", text: "Sign out"}
+              { id: "signout", text: "サインアウト"}
             ]
           }] : [])
         ]}
@@ -55,7 +55,7 @@ const TopNavBar = () => {
           onChange={({ detail }) => setUseDarkMode(detail.checked)}
           checked={useDarkMode}
         >
-          Dark Mode
+          ダークモード
         </Toggle>
       </div>
     </>

@@ -65,10 +65,20 @@ export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGrap
         agentAliasId: outputs.custom.petrophysicsAgentAliasId,
         samplePrompts: [
             "Give me a summary fluid substitution modeling",
-            "Give me the inputs of Gassmann equation",
+            "Gassmann の式の入力変数を教えて",
             "What are AVO classes?",
             "Calculate the intercept and gradient value of the wet sandstone with vp=3.5 km/s, vs=1.95 km/s, bulk density=2.23 gm/cc when it is overlain by a shale? Determine the AVO class.",
             "A wet sandstone has vp=3.5 km/s, vs=1.95 km/s, bulk density=2.23 gm/cc. What are the expected seismic velocities of the sandstone if the desired ﬂuid saturation is 80% oil? Use standard assumptions."
             ],
+    } as BedrockAgent,
+    SolarAgent: {
+        name: "太陽光発電 AIエージェント",
+        source: "bedrockAgent",
+        agentId: '1CENEWD5QM',
+        agentAliasId: 'C9RTQGISKU',
+        samplePrompts: [
+            "エネルギー消費予測を教えていただけますか？現在の使用量と比べてどうですか？私のIDは1です。",
+            "8月の予測を更新していただけますか？旅行の予定があり、予測は50になります。私のIDは1です。",
+        ],
     } as BedrockAgent
 }
