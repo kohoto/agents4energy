@@ -71,6 +71,16 @@ export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGrap
             "A wet sandstone has vp=3.5 km/s, vs=1.95 km/s, bulk density=2.23 gm/cc. What are the expected seismic velocities of the sandstone if the desired ﬂuid saturation is 80% oil? Use standard assumptions."
             ],
     } as BedrockAgent,
+    UpstreamAgent: {
+        name: "石油上流工程 AIエージェント",
+        source: "bedrockAgent",
+        agentId: 'ZWXAIZT6GH',
+        agentAliasId: 'IN0XDVNYP5',
+        samplePrompts: [
+            "Give me a summary fluid substitution modeling",
+            "Gassmann の式の入力変数を教えて",
+            ],
+    } as BedrockAgent,
     SolarAgent: {
         name: "太陽光発電 AIエージェント",
         source: "bedrockAgent",
@@ -84,8 +94,8 @@ export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGrap
     WhatIfSimAgent: {
         name: "供給計画 AIエージェント",
         source: "bedrockAgent",
-        agentId: 'ZWXAIZT6GH',
-        agentAliasId: 'IN0XDVNYP5',
+        agentId: '1DX6TV4PSH',
+        agentAliasId: 'LK9N8DCRMO',
         samplePrompts: [
             "製油所Xの稼働が停止したので、石油製品を輸入したいです、その場合の最適な輸入量を教えて",
             "油種振替をしたいです。最適な振替量を教えて",
