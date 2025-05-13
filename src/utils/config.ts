@@ -84,8 +84,8 @@ export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGrap
     WhatIfSimAgent: {
         name: "供給計画 AIエージェント",
         source: "bedrockAgent",
-        agentId: '1DX6TV4PSH',
-        agentAliasId: 'LK9N8DCRMO',
+        agentId: 'ZWXAIZT6GH',
+        agentAliasId: 'IN0XDVNYP5',
         samplePrompts: [
             "製油所Xの稼働が停止したので、石油製品を輸入したいです、その場合の最適な輸入量を教えて",
             "油種振替をしたいです。最適な振替量を教えて",
