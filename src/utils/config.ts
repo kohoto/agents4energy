@@ -80,5 +80,18 @@ export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGrap
             "エネルギー消費予測を教えていただけますか？現在の使用量と比べてどうですか？私のIDは1です。",
             "8月の予測を更新していただけますか？旅行の予定があり、予測は50になります。私のIDは1です。",
         ],
+    } as BedrockAgent,
+    WhatIfSimAgent: {
+        name: "供給計画 AIエージェント",
+        source: "bedrockAgent",
+        agentId: '1DX6TV4PSH',
+        agentAliasId: 'LK9N8DCRMO',
+        samplePrompts: [
+            "製油所Xの稼働が停止したので、石油製品を輸入したいです、その場合の最適な輸入量を教えて",
+            "油種振替をしたいです。最適な振替量を教えて",
+            "夏の輸出入で在庫調整する際の熟練者からのアドバイスは？",
+            "製油所Xの稼働が停止したので輸入か油種振替をして製油所の在庫を調整したいです。最適な施策はどれですか？",
+        ],
     } as BedrockAgent
+
 }
