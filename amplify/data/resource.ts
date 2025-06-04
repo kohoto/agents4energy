@@ -28,7 +28,8 @@ export const productionAgentFunction = defineFunction({
     STRUCTURED_OUTPUT_MODEL_ID: 'us.anthropic.claude-3-haiku-20240307-v1:0',
     // MODEL_ID: 'us.anthropic.claude-3-5-sonnet-20240620-v1:0'
     // MODEL_ID: 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
-    MODEL_ID: 'us.anthropic.claude-3-sonnet-20240229-v1:0',
+    // MODEL_ID: 'us.anthropic.claude-3-sonnet-20240229-v1:0',
+    MODEL_ID: 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
     // MODEL_ID: 'us.anthropic.claude-3-haiku-20240307-v1:0'
     // MODEL_ID: 'us.amazon.nova-pro-v1:0',
     // MODEL_ID: 'amazon.nova-lite-v1:0'
@@ -44,7 +45,8 @@ export const planAndExecuteAgentFunction = defineFunction({
   environment: {
     // MODEL_ID: 'us.anthropic.claude-3-5-sonnet-20240620-v1:0'
     // MODEL_ID: 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
-    MODEL_ID: 'us.anthropic.claude-3-sonnet-20240229-v1:0'
+    // MODEL_ID: 'us.anthropic.claude-3-sonnet-20240229-v1:0'
+    MODEL_ID: 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
     // MODEL_ID: 'us.anthropic.claude-3-haiku-20240307-v1:0'
   },
   runtime: 20
