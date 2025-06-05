@@ -195,7 +195,7 @@ export const handler: Schema["invokeProductionAgent"]["functionHandler"] = async
                     tool_calls: streamChunk.tool_calls
                 })
 
-                // console.log('Publishing AI Message: ', streamChunkAIMessage, '. Content: ', streamChunkAIMessage.content)
+                console.log('Publishing AI Message: ', streamChunkAIMessage, '. Content: ', streamChunkAIMessage.content)
 
                 await amplifyClientWrapper.publishMessage({
                     chatSessionId: event.arguments.chatSessionId,

@@ -114,6 +114,36 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
 
     // Subscribe to the token stream for this chat session
     useEffect(() => {
+
+        ////////
+
+        function handleKeyDown(e) {
+        // テキストエリアにフォーカスがある場合のみ処理を実行
+        if (!e.target.matches('textarea')) return;
+        if (e.key === 'Enter') {
+            // Command+Enterで送信（Mac用）
+            if (e.metaKey) {
+            e.preventDefault();
+            const submitButton = document.querySelector('button[class*="submit"]') as HTMLButtonElement | null;
+            if (submitButton) {
+                submitButton.click();
+            }
+            return;
+            }
+            // Shift+Enterで改行
+            if (e.shiftKey) {
+            return; // デフォルトの改行動作を許可
+            }
+            // 通常のEnterでの送信を防ぐ
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        }
+        }
+
+        document.addEventListener('keydown', handleKeyDown, true);
+
+        ////////
         console.log("Subscribing to the token stream for this chat session")
         if (chatSession) {
             const sub = amplifyClient.subscriptions.recieveResponseStreamChunk({ chatSessionId: chatSession.id }).subscribe({
@@ -468,8 +498,14 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                                 actionButtonAriaLabel={isGenAiResponseLoading ? 'Send message button - suppressed' : 'Send message'}
                                 actionButtonIconName="send"
                                 ariaLabel={isGenAiResponseLoading ? 'Prompt input - suppressed' : 'Prompt input'}
-                                placeholder="質問を入力してください..."
+                                placeholder="質問を入力してください...（Command+Enter で質問を送信）"
                                 autoFocus
+                                onKeyDown={(event) => {
+                                    // event.detail.key でキー判定
+                                    if (event.detail.key === 'Enter') {
+                                    event.preventDefault(); // デフォルトの送信動作を抑止
+                                    }
+                                }}
                             />
                         </FormField>
                     }

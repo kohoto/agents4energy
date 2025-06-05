@@ -24,7 +24,7 @@ import React, { useState, useEffect } from "react";
 import { Message } from "../utils/types";
 
 // import PlotComponent from '../PlotComponent'
-import { Scatter } from 'react-chartjs-2';
+import { Scatter, Bar } from 'react-chartjs-2';
 // import annotationPlugin from 'chartjs-plugin-annotation';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -34,6 +34,8 @@ import {
   LogarithmicScale,
   PointElement,
   LineElement,
+  BarElement,
+  CategoryScale,
   Tooltip,
   Legend,
   ChartData,
@@ -49,6 +51,8 @@ ChartJS.register(
   LogarithmicScale,
   PointElement,
   LineElement,
+  BarElement,
+  CategoryScale,
   Tooltip,
   Legend,
   TimeScale,
@@ -209,21 +213,22 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
         const selectedToolMessages = [
           ...includePreviousDataTable ? [props.message.previousTrendTableMessage] : [],
           ...includePreviousEventTable ? [props.message.previousEventTableMessage] : []
-
         ]
-
-        // console.log("Selected messages: ", selectedToolMessages)
 
         if (selectedToolMessages.length === 0) return
 
-        interface ScatterDataPoint {
+        interface BarDataPoint {
           x: Date | number;
           y?: number;
           url?: string;
           rowData?: string;
         }
 
-        const data: ChartData<'scatter', ScatterDataPoint[]> = { datasets: [] }
+        // 積み上げ棒グラフ用のデータ構造
+        const data: ChartData<'bar'> = { 
+          labels: [],
+          datasets: [] 
+        }
 
         const xAxisLabels = selectedToolMessages.map((selectedToolMessage) => {
           if (!selectedToolMessage) return
@@ -235,142 +240,120 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
           if (!chartContent.queryResponseData || chartContent.queryResponseData.length === 0 || !chartContent.queryResponseData[0]) return
 
           const chartQueryResponsesWithDate = chartContent.queryResponseData
-            .filter(dataRow => { //The first key in the object must contain a date
+            .filter(dataRow => {
               const dateCandidate = dataRow[Object.keys(dataRow)[0]]
-              // console.log('dateCandidate: ', dateCandidate)
               return (dateCandidate !== null) &&
                 !isNaN((new Date(dateCandidate)).getTime())
             })
 
-          // console.log('chart query responses with date: ', chartQueryResponsesWithDate)
-
-
           const chartDataObject = transformListToObject(chartQueryResponsesWithDate)
-
-          // console.log('chart data: ', chartDataObject)
-
           const chartTrendNames = Object.keys(chartDataObject)
-
+          console.log(chartTrendNames)
           const tableType = chartTrendNames.includes('s3Key') ? 'events' : 'trend'
-
-          // console.log('table type: ', tableType)
 
           switch (tableType) {
             case 'events':
-              // console.log('chartQueryResponsesWithDate:\n', stringify(chartQueryResponsesWithDate))
-              const newEventData: ChartData<'scatter', ScatterDataPoint[]> = {
-                // labels: ['event'.repeat(chartDataObject[chartTrendNames[0]].length)],
+              const newEventData: ChartData<'bar'> = {
+                labels: chartDataObject[chartTrendNames[0]].map(date => new Date(date)),
                 datasets: [
                   {
-                    data: chartDataObject[chartTrendNames[0]].map((xValue, i) => ({
-                      x: new Date(xValue), // Convert to Date object
-                      y: 100,
-                      url: `/files/${chartDataObject['s3Key'][i]}`.slice(0, -5),//Remove the .yaml,
-                      rowData: stringify(Object.keys(chartDataObject)
-                        .filter((columnName) => !nonDefaultColumns.includes(columnName))
-                        .reduce((acc, key) => ({ //Create a yaml string with the row's data
-                          ...acc,
-                          [key]: chartDataObject[key][i]
-                        }), {})
-                      )
-                    })),
-                    pointRadius: 20,
+                    data: chartDataObject[chartTrendNames[0]].map(() => 100),
                     datalabels: {
-                      display: "auto",
-                      rotation: 90
+                      display: false
                     },
-                    borderColor: "transparent",
-                    backgroundColor: "transparent",
-                    // datalabels: {
-                    //   color: '#FFCE56'
-                    // },
+                    backgroundColor: "rgba(200, 200, 200, 0.5)",
                     label: "Events",
-                    // tension: 0.1,
-
-                    // borderColor: 'rgb(75, 192, 192)',
-                    // pointBackgroundColor: 'rgb(75, 192, 192)',
                   }
                 ]
               }
 
+              data.labels = [...(data.labels || []), ...newEventData.labels]
               data.datasets.push(...newEventData.datasets)
               break
             case 'trend':
+              // 日付をラベルとして設定
               const xAxisIsNumberNotDate = !isNaN(Number(chartDataObject[chartTrendNames[0]][0]))
-              // console.log('xAxisIsNumberNotDate: ', xAxisIsNumberNotDate)
-              const newData: ChartData<'scatter', ScatterDataPoint[]> = {
-                datasets: chartTrendNames
-                  .slice(1) // The first column will be used for the x axis
-                  .filter((columnName) => (!isNaN(Number(chartDataObject[columnName][0]))))
-                  .map((columnName, index) => ({
-                    data: chartDataObject[chartTrendNames[0]].map((xValue, i) => ({
-                      x: (xAxisIsNumberNotDate) ? new Number(xValue) as number : new Date(xValue), // Convert to Date object if xValue is a string
-                      y: Number(chartDataObject[columnName][i])
-                    })),
-                    mode: 'lines+markers',
-                    datalabels: {
-                      display: false
-                    },
-                    backgroundColor:
-                      (columnName.toLocaleLowerCase().includes('oil')) ?
-                        `hsl(120, 70%, 30%)` : // bright green
-                        (columnName.toLocaleLowerCase().includes('gas')) ?
-                          `hsl(0, 70%, 60%)` : // bright red
-                          (columnName.toLocaleLowerCase().includes('water')) ?
-                            `hsl(240, 70%, 60%)` : //bright blue
-                            generateColor(index),
-                    label: columnName,
-                  })
-                  )
-              }
+              const dateLabels = chartDataObject[chartTrendNames[0]].map(date => 
+                xAxisIsNumberNotDate ? new Number(date) : new Date(date)
+              )
+              
+              data.labels = dateLabels
 
-              data.datasets.push(...newData.datasets)
+              // oil, gas, waterのデータセットを作成
+              const categories = ['oil', 'gas', 'water']
+              const colors = {
+                'oil': 'rgba(0, 128, 0, 0.7)',    // 緑
+                'gas': 'rgba(255, 0, 0, 0.7)',    // 赤
+                'water': 'rgba(0, 0, 255, 0.7)'   // 青
+              }
+              
+              // カテゴリごとにデータセットを作成
+              categories.forEach(category => {
+                const matchingColumns = chartTrendNames
+                  .slice(1)
+                  .filter(columnName => 
+                    columnName.toLowerCase().includes(category) && 
+                    !isNaN(Number(chartDataObject[columnName][0]))
+                  )
+                
+                if (matchingColumns.length > 0) {
+                  matchingColumns.forEach(columnName => {
+                    data.datasets.push({
+                      label: columnName,
+                      data: chartDataObject[columnName].map(value => Number(value)),
+                      backgroundColor: colors[category as keyof typeof colors] || generateColor(data.datasets.length),
+                      stack: 'stack1', // すべてのデータセットを同じスタックに
+                      datalabels: {
+                        display: false
+                      },
+                    })
+                  })
+                }
+              })
               break
           }
           return chartTrendNames[0]
         })
 
-        if (!data.datasets[0]) return //No data sets found in query
+        if (!data.datasets[0] || !data.labels || data.labels.length === 0) return
 
-        // console.log('chart data:\n', data)
-
-
-        // console.log("First X data Point: ", data.datasets[0].data[0].x)
-        // console.log("First X data Point Is Date: ", data.datasets[0].data[0].x instanceof Date)
-
-        const options: ChartOptions<'scatter'> = {
-          // responsive: true,
-          scales: {//If the first x data point is a number an not a date, use a number x axis
-            x: (data.datasets[0].data[0].x instanceof Date) ? {
+        const options: ChartOptions<'bar'> = {
+          responsive: true,
+          scales: {
+            x: (data.labels[0] instanceof Date) ? {
               type: 'time' as const,
+              stacked: true,
               time: {
                 unit: 'day' as const,
                 tooltipFormat: 'PP',
                 displayFormats: {
-                  day: 'yyyy MMM d',
+                  // day のフォーマット: m/d hh:mm
+                  day: 'M/d HH:mm',                
                 },
               },
               title: {
                 display: true,
-                text: 'date',
+                text: '日付',
               },
               adapters: {
                 date: {
                   locale: enUS,
                 },
-              },
-            } : {//Here is the title if the x axis is numberic
+              }
+            } : {
               title: {
                 display: true,
                 text: xAxisLabels.join('\n'),
-              }
+              },
+              stacked: true
             },
             y: {
-              type: 'logarithmic' as const,
+              stacked: true,
+              min: 0,
               title: {
                 display: true,
-                text: 'Value (log scale)',
-              },
+                text: 'Value',
+              }
             },
           },
           onClick: (_event, elements) => {
@@ -398,21 +381,21 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
                 drag: {
                   enabled: true,
                   modifierKey: "shift"
-                },
+                }
               }
             },
-            datalabels: {
-              display: 'auto', //Hide overlapped data
-              color: 'black',
-              backgroundColor: 'white',
-              borderRadius: 4,
-              font: {
-                weight: "bold"
-              },
-              formatter: function () {//value, context) {
-                return 'event'
-              }
-            },
+            // datalabels: {
+            //   display: 'auto', //Hide overlapped data
+            //   color: 'black',
+            //   backgroundColor: 'white',
+            //   borderRadius: 4,
+            //   font: {
+            //     weight: "bold"
+            //   },
+            //   formatter: function () {//value, context) {
+            //     return 'event-tohoko'
+            //   }
+            // },
 
             tooltip: {
               callbacks: {
@@ -447,7 +430,7 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
           >
             {stringify(props.message)}
           </pre> */}
-          <Scatter
+          <Bar
             data={data}
             options={options}
           />

@@ -96,7 +96,7 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
     })
 
     await publishTokenStreamChunk({
-        tokenStreamChunk: new AIMessageChunk({content: "Generating new plan ...\n\n"}),//This is just meant to show something is happening.
+        tokenStreamChunk: new AIMessageChunk({content: "計画を立てています ...\n\n"}),//This is just meant to show something is happening.
         tokenIndex: -1,
         amplifyClientWrapper: amplifyClientWrapper
     })
