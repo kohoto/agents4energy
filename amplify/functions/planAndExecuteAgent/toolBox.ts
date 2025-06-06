@@ -22,18 +22,14 @@ import { getMessageCatigory } from '../../../src/utils/amplify-utils'
 const queryGQLScheama = z.object({
     queryField: z
         .enum(["invokeBedrock", "invokeProductionAgent"]).describe(`
-            Use invokeProductionAgent for:
-                - General petroleum engineering knowledge
-                - Gathering well data, with data sources including well files, production volume databases.
-                - Diagnosing well problems
-                - Steps to repair a well
-                - Repair cost estimates
-                - Financial returns estimates
+            invokeProductionAgent は以下の用途で使用します:
+                - 電力の発電量と使用電力量を表す需給実績グラフの作成
+                - 電力の需給実績に関する洞察を出力
             `.replace(/^\s+/gm, '')),
     invocationText: z.string().describe(`
-        The text to use to invoke the agent. 
-        When using invokeProduction Agent:
-        - Be sure to specify the API number of the well of interest
+        エージェントを呼び出すために使用するテキストです。
+        invokeProductionAgent を呼び出す際は：
+        - 対象となる電力事業者のidを必ず指定してください。
         `.replace(/^\s+/gm, '')),
 });
 
@@ -207,15 +203,10 @@ export const queryGQLToolBuilder = (props: { amplifyClientWrapper: AmplifyClient
     {
         name: "queryGQL",
         description: `
-        Can query a GraphQL API. 
-        Query invokeProductionAgent for:
-            - Create plots or visualizations of well data (including invoking plotProductionTool)
-            - General petroleum engineering knowledge
-            - Gathering well data, with data sources including well files, production volume databases.
-            - Diagnosing well problems
-            - Steps to repair a well
-            - Repair cost estimates
-            - Financial returns estimates
+        GraphQL APIにクエリを実行できます。 
+        以下の目的でinvokeProductionAgentにクエリを実行: 
+        - 電力の発電量と使用電力量を表す需給実績グラフのプロットや可視化の作成
+        - 電力の需給実績に関する洞察を出力
         `.replaceAll(/^\s+/gm, ''),
         schema: queryGQLScheama,
     }
