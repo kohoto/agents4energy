@@ -268,7 +268,7 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
                 ]
               }
 
-              data.labels = [...(data.labels || []), ...newEventData.labels]
+              data.labels = [...(data.labels || []), ...(data.labels || [])]
               data.datasets.push(...newEventData.datasets)
               break
             case 'trend':
@@ -361,7 +361,8 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
             if (elements.length > 0) {
               const datasetIndex = elements[0].datasetIndex;
               const index = elements[0].index;
-              const url = data.datasets[datasetIndex].data[index].url
+              // const url = data.datasets[datasetIndex].data[index].url
+              const url = '';
               if (data.datasets[datasetIndex].label === 'Events' && url) window.open(url, '_blank');
             }
           },
@@ -406,7 +407,8 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
                     // Custom tooltip for Events
                     const datasetIndex = context.datasetIndex;
                     const index = context.dataIndex
-                    const rowData = data.datasets[datasetIndex].data[index].rowData
+                    // const rowData = data.datasets[datasetIndex].data[index].rowData
+                    const rowData = 'event'
                     return rowData?.split('\n')
                     // return `Line 1\nLine 2\nLine 3`.split("\n");
                     // return `Events: ${context.parsed.y}`; // Modify this according to your needs
