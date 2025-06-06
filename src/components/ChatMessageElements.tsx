@@ -24,7 +24,7 @@ import React, { useState, useEffect } from "react";
 import { Message } from "../utils/types";
 
 // import PlotComponent from '../PlotComponent'
-import { Scatter, Bar } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 // import annotationPlugin from 'chartjs-plugin-annotation';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -217,12 +217,13 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
 
         if (selectedToolMessages.length === 0) return
 
-        interface BarDataPoint {
-          x: Date | number;
-          y?: number;
-          url?: string;
-          rowData?: string;
-        }
+        // avoid lint build error
+        // interface BarDataPoint {
+        //   x: Date | number;
+        //   y?: number;
+        //   url?: string;
+        //   rowData?: string;
+        // }
 
         // 積み上げ棒グラフ用のデータ構造
         const data: ChartData<'bar'> = { 

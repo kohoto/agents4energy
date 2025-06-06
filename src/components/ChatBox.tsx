@@ -117,9 +117,9 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
 
         ////////
 
-        function handleKeyDown(e) {
+        function handleKeyDown(e: KeyboardEvent) {
         // テキストエリアにフォーカスがある場合のみ処理を実行
-        if (!e.target.matches('textarea')) return;
+        if (!e.target || !(e.target as HTMLElement).matches('textarea')) return;
         if (e.key === 'Enter') {
             // Command+Enterで送信（Mac用）
             if (e.metaKey) {

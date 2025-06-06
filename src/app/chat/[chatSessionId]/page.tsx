@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic'
 
 import type { Schema } from '@/../amplify/data/resource';
 import { amplifyClient } from '@/utils/amplify-utils';
-import { formatDate } from "@/utils/date-utils";
 import { defaultAgents } from '@/utils/config'
 import { Message } from '@/utils/types'
 import { withAuth } from '@/components/WithAuth';
@@ -44,10 +43,7 @@ const ButtonDropdown = dynamic(
     () => import('@cloudscape-design/components/button-dropdown'),
     { ssr: false }
 );
-const Tiles = dynamic(
-    () => import('@cloudscape-design/components/tiles'),
-    { ssr: false }
-);
+// 未使用のTilesコンポーネントのインポートを削除
 const Container = dynamic(
     () => import('@cloudscape-design/components/container'),
     { ssr: false }
@@ -143,7 +139,8 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
 
     }, [user, initialActiveChatSession, params?.chatSessionId])
 
-    const groupChatsByMonth = useCallback((chatSessions: Array<Schema["ChatSession"]["type"]>): SideNavigationProps.Item[] => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+const groupChatsByMonth = useCallback((chatSessions: Array<Schema["ChatSession"]["type"]>): SideNavigationProps.Item[] => {
         const grouped = chatSessions
             .sort((a, b) => (a.createdAt && b.createdAt) ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() : 0)
             .reduce((acc: { [key: string]: Array<Schema["ChatSession"]["type"]> }, session) => {
@@ -253,9 +250,6 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
     
     // チャットセッションIDがあり、ロードが完了し、チャットセッションが見つかった場合
     const showChatContent = params?.chatSessionId && !isLoading && initialActiveChatSession;
-    
-    // チャットセッションIDがない場合（トップページ）
-    const showAgentSelection = !params?.chatSessionId;
 
     return (
         <div className='page-container'>
