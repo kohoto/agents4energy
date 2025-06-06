@@ -78,7 +78,7 @@ const bedrockAgentDataSource = backend.data.resources.graphqlApi.addHttpDataSour
 bedrockRuntimeDataSource.grantPrincipal.addToPrincipalPolicy(
   new iam.PolicyStatement({
     resources: [
-      `arn:aws:bedrock:${backend.auth.stack.region}::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0`,
+      `arn:aws:bedrock:${backend.auth.stack.region}::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0`,
       `arn:aws:bedrock:${backend.auth.stack.region}::foundation-model/anthropic.*`,
     ],
     actions: ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],

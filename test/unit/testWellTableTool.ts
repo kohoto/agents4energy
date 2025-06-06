@@ -44,7 +44,8 @@ async function main() {
   await getLambdaEnvironmentVariables(await getDeployedResourceArn(rootStackName, 'productionagentfunctionlambda'))
   process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT = outputs.data.url
   process.env.AWS_DEFAULT_REGION = outputs.auth.aws_region
-  process.env.MODEL_ID = 'us.anthropic.claude-3-sonnet-20240229-v1:0'
+  // process.env.MODEL_ID = 'us.anthropic.claude-3-sonnet-20240229-v1:0'
+  process.env.MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'
 
   const tableDefinitions = await wellTableTool.invoke(testArguments);
   console.log('tableDefinitions:\n', tableDefinitions);

@@ -34,8 +34,8 @@ export const main = async () => {
 
   process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT = outputs.data.url
   process.env.AWS_DEFAULT_REGION = outputs.auth.aws_region
-  process.env.MODEL_ID = 'anthropic.claude-3-sonnet-20240229-v1:0'
-
+  // process.env.MODEL_ID = 'anthropic.claude-3-sonnet-20240229-v1:0'
+  process.env.MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0'
   const credentials = await stsClient.config.credentials()
   process.env.AWS_ACCESS_KEY_ID = credentials.accessKeyId
   process.env.AWS_SECRET_ACCESS_KEY = credentials.secretAccessKey
