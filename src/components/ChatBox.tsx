@@ -236,7 +236,7 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
 
                 const suggestedPromptsResponse = await amplifyClient.queries.invokeBedrockWithStructuredOutput({
                     chatSessionId: chatSession.id,
-                    lastMessageText: "Suggest three follow up prompts",
+                    lastMessageText: "ユーザーの会話履歴をもとに、次にユーザーが聞くと良い質問を1～3つ、日本語で考えてください。必ず1～3つの日本語の質問文を提案してください。出力例: 1. 〇〇について詳しく教えてください。2. 〇〇はどのように使いますか？3. 〇〇のメリットは何ですか？ 注意事項: 質問が1つしか思いつかない場合は1つだけでも構いません。",
                     usePastMessages: true,
                     outputStructure: JSON.stringify({
                         title: "RecommendNextPrompt", //title and description help the llm to know how to fill the arguments out
@@ -248,7 +248,7 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                                 items: {
                                     type: 'string'
                                 },
-                                minItems: 3,
+                                minItems: 1,
                                 maxItems: 3,
                                 description: `
                                     Prompts to suggest to a user when interacting with a large language model
@@ -463,7 +463,7 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
                             <span className='prompt-label'>
                                 <Button
                                     onClick={async () => {
-                                        if (chatSession?.id && window.confirm('Are you sure you want to delete this chat session? This action cannot be undone.')) {
+                                        if (chatSession?.id && window.confirm('このチャット履歴を削除しますか？この操作は取り消すことができません。')) {
                                             await amplifyClient.models.ChatSession.delete({ id: chatSession.id })
                                         }
                                     }}

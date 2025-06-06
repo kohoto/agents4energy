@@ -80,18 +80,24 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
     const router = useRouter();
     const [navigationOpen, setNavigationOpen] = useState(true);
 
+    // ローディング状態を追加
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
     //Set the chat session from params
     useEffect(() => {
         if (params && params.chatSessionId) {
+            setIsLoading(true);
             amplifyClient.models.ChatSession.get({ id: params.chatSessionId }).then(({ data: chatSession }) => {
                 if (chatSession) {
                     setInitialActiveChatSession(chatSession)
-
                     console.log('Loaded chat session. Ai Bot Info:', chatSession.aiBotInfo)
-
                 } else {
                     console.log(`Chat session ${params.chatSessionId} not found`)
                 }
+                setIsLoading(false);
+            }).catch(error => {
+                console.error("Error loading chat session:", error);
+                setIsLoading(false);
             })
         } else {
             console.log("No chat session id in params: ", params)
@@ -163,29 +169,22 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                 return acc;
             }, {});
 
-        return Object.entries(grouped).map(([monthYear, groupedChatSessions]): SideNavigationProps.Item => ({
-            type: "section",
-            text: monthYear,
-            items: [{
+        // 各チャットセッションに対して直接リンクを作成
+        return Object.entries(grouped).map(([monthYear, groupedChatSessions]): SideNavigationProps.Item => {
+            // 各チャットセッションに対して直接リンクを作成
+            const items = groupedChatSessions.map((chatSession): SideNavigationProps.Item => ({
                 type: "link",
-                href: `/chat`,
-                text: "",
-                info: <Tiles
-                    onChange={({ detail }) => {
-                        router.push(`/chat/${detail.value}`);
-                    }}
-                    value={(params && params.chatSessionId) ? params.chatSessionId : "No Active Chat Session"}
-                    items={
-                        groupedChatSessions.map((groupedChatSession) => ({
-                            controlId: groupedChatSession.id,
-                            label: groupedChatSession.firstMessageSummary?.slice(0, 50),
-                            description: `${formatDate(groupedChatSession.createdAt)} - AI: ${groupedChatSession.aiBotInfo?.aiBotName || 'Unknown'}`,
-                            value: groupedChatSession.id
-                        }))
-                    }
-                />
-            }]
-        }));
+                href: `/chat/${chatSession.id}`,
+                text: chatSession.firstMessageSummary?.slice(0, 50) || '無題のチャット',
+                // info: formatDate(chatSession.createdAt),
+            }));
+            
+            return {
+                type: "section",
+                text: monthYear,
+                items: items
+            };
+        });
     }, [router, params]);
 
     useEffect(() => {
@@ -212,7 +211,7 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
 
         const generateGlossaryResponse = await amplifyClient.queries.invokeBedrockWithStructuredOutput({
             chatSessionId: message.chatSessionId,
-            lastMessageText: `Define any uncommon or industry specific terms in the message below\n<message>${message.content}</message>`,
+            lastMessageText: `以下のメッセージにある専門用語や一般的でない用語を日本語で定義してください。\n<message>${message.content}</message>`,
             usePastMessages: false,
             outputStructure: JSON.stringify({
                 title: "DefineGlossaryTerms", //title and description help the llm to know how to fill the arguments out
@@ -245,6 +244,18 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
             // const newSuggestedPrompts = JSON.parse(suggestedPromptsResponse.data).suggestedPrompts as string[]
         } else console.log('Error Generating Glossary: ', generateGlossaryResponse)
     }
+
+    // チャットセッションIDがあるが、まだロード中の場合はローディング表示
+    const showLoadingState = params?.chatSessionId && isLoading;
+    
+    // チャットセッションIDがあり、ロードが完了しているがチャットセッションが見つからない場合
+    const showChatNotFound = params?.chatSessionId && !isLoading && !initialActiveChatSession;
+    
+    // チャットセッションIDがあり、ロードが完了し、チャットセッションが見つかった場合
+    const showChatContent = params?.chatSessionId && !isLoading && initialActiveChatSession;
+    
+    // チャットセッションIDがない場合（トップページ）
+    const showAgentSelection = !params?.chatSessionId;
 
     return (
         <div className='page-container'>
@@ -330,43 +341,70 @@ function Page({ params }: { params?: { chatSessionId: string } }) {
                                 navigation={
                                     <SideNavigation
                                         header={{
-                                            href: '#',
+                                            href: '',
                                             text: 'チャット履歴',
                                         }}
                                         items={groupedChatSessions}
                                     />
                                 }
                                 content={
-                                    initialActiveChatSession ?
-                                        (<ChatBox
+                                    showLoadingState ? (
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            height: '100%',
+                                            width: '100%'
+                                        }}>
+                                            <div>チャットを読み込み中...</div>
+                                        </div>
+                                    ) : showChatNotFound ? (
+                                        <div style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            height: '100%',
+                                            width: '100%'
+                                        }}>
+                                            <h3>チャットが見つかりませんでした</h3>
+                                            <Button
+                                                onClick={() => router.push('/chat')}
+                                            >
+                                                トップページに戻る
+                                            </Button>
+                                        </div>
+                                    ) : showChatContent ? (
+                                        <ChatBox
                                             chatSession={initialActiveChatSession}
                                             glossaryBlurbs={glossaryBlurbs}
                                             getGlossary={getGlossary}
-                                        />) : (
-                                            <div style={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                gap: '1rem',
-                                                alignItems: 'flex-start'
-                                            }}>
-                                                <h3>Select an agent to chat with:</h3>
-                                                {
-                                                    Object.entries(defaultAgents)
-                                                        .map(
-                                                            ([agentId, agentInfo]) => {
-                                                                return <Button
-                                                                    key={agentId}
-                                                                    onClick={() => {
-                                                                        createChatSession({ aiBotInfo: { aiBotName: agentInfo.name, aiBotId: agentId } })
-                                                                    }}
-                                                                >
-                                                                    {agentInfo.name}
-                                                                </Button>
-                                                            }
-                                                        )
-                                                }
-                                            </div>
-                                        )
+                                        />
+                                    ) : (
+                                        <div style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '1rem',
+                                            alignItems: 'flex-start'
+                                        }}>
+                                            <h3>Select an agent to chat with:</h3>
+                                            {
+                                                Object.entries(defaultAgents)
+                                                    .map(
+                                                        ([agentId, agentInfo]) => {
+                                                            return <Button
+                                                                key={agentId}
+                                                                onClick={() => {
+                                                                    createChatSession({ aiBotInfo: { aiBotName: agentInfo.name, aiBotId: agentId } })
+                                                                }}
+                                                            >
+                                                                {agentInfo.name}
+                                                            </Button>
+                                                        }
+                                                    )
+                                            }
+                                        </div>
+                                    )
                                 }
                             />,
                         action:
