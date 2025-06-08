@@ -169,12 +169,18 @@ const groupChatsByMonth = useCallback((chatSessions: Array<Schema["ChatSession"]
         // 各チャットセッションに対して直接リンクを作成
         return Object.entries(grouped).map(([monthYear, groupedChatSessions]): SideNavigationProps.Item => {
             // 各チャットセッションに対して直接リンクを作成
-            const items = groupedChatSessions.map((chatSession): SideNavigationProps.Item => ({
-                type: "link",
-                href: `/chat/${chatSession.id}`,
-                text: chatSession.firstMessageSummary?.slice(0, 50) || '無題のチャット',
-                // info: formatDate(chatSession.createdAt),
-            }));
+            const items = groupedChatSessions.map((chatSession): SideNavigationProps.Item => {
+                // 現在表示中のチャットセッションかどうかを判定
+                const isActive = params?.chatSessionId === chatSession.id;
+                const sidebar_text = chatSession.firstMessageSummary?.slice(0, 50) || '無題のチャット'
+                const sidebar_text_w_style = isActive ? <strong>{sidebar_text}</strong> : <span>{sidebar_text}</span>
+                                
+                return {
+                    type: "link",
+                    href: `/chat/${chatSession.id}`,
+                    text: sidebar_text_w_style
+                };
+            });
             
             return {
                 type: "section",
