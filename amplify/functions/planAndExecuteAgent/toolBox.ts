@@ -22,14 +22,17 @@ import { getMessageCatigory } from '../../../src/utils/amplify-utils'
 const queryGQLScheama = z.object({
     queryField: z
         .enum(["invokeBedrock", "invokeProductionAgent"]).describe(`
-            invokeProductionAgent は以下の用途で使用します:
-                - 電力の発電量と使用電力量を表す需給実績グラフの作成
-                - 電力の需給実績に関する洞察を出力
+            以下の用途でinvokeProductionAgentを使用してください:
+            - 石油工学の一般的な知識
+            - 坑井ファイルや生産量データベースなどのデータソースからの坑井データ収集
+            - 坑井の問題診断
+            - 坑井修理の手順
+            - 修理費用の見積もり
+            - 収益性の見積もり
             `.replace(/^\s+/gm, '')),
     invocationText: z.string().describe(`
-        エージェントを呼び出すために使用するテキストです。
-        invokeProductionAgent を呼び出す際は：
-        - 対象となる電力事業者のidを必ず指定してください。
+        エージェントを呼び出すために使用するテキスト。 invokeProductionAgent を呼び出す際：
+        - 対象となる坑井のAPI番号を必ず指定してください
         `.replace(/^\s+/gm, '')),
 });
 
@@ -69,7 +72,7 @@ export const queryGQLToolBuilder = (props: { amplifyClientWrapper: AmplifyClient
                     }
                 })
 
-                amplifyClientWrapper.amplifyClient.graphql({ //To stream partial responces to the client
+                amplifyClientWrapper.amplifyClient.graphql({ //To stream partial responces to the client React から AppSync を使って Lambda や RDS にアクセスしデータ操作を行う
                     query: invokeProductionAgent,
                     variables: {
                         chatSessionId: amplifyClientWrapper.chatSessionId,
@@ -203,10 +206,14 @@ export const queryGQLToolBuilder = (props: { amplifyClientWrapper: AmplifyClient
     {
         name: "queryGQL",
         description: `
-        GraphQL APIにクエリを実行できます。 
-        以下の目的でinvokeProductionAgentにクエリを実行: 
-        - 電力の発電量と使用電力量を表す需給実績グラフのプロットや可視化の作成
-        - 電力の需給実績に関する洞察を出力
+        GraphQL APIにクエリを実行できます。 以下の目的でinvokeProductionAgentにクエリを実行:
+        - 坑井データのプロットや可視化の作成 (plotProductionToolの呼び出しを含む)
+        - 石油工学の一般的な知識
+        - 坑井ファイル、生産量データベースなどのデータソースからの坑井データ収集
+        - 坑井の問題診断
+        - 坑井修理の手順
+        - 修理費用の見積もり
+        - 財務リターンの見積もり
         `.replaceAll(/^\s+/gm, ''),
         schema: queryGQLScheama,
     }

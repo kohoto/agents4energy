@@ -45,7 +45,7 @@ export async function queryKnowledgeBase(props: { knowledgeBaseId: string, query
 ////// Retrieve Petroleum Enginnering Knowledge Tool //////////
 ///////////////////////////////////////////////////////////////
 const retrievePetroleumEngineeringKnowledgeSchema = z.object({
-    concepts: z.string().describe(`Which concepts would you like to know about?`),
+    concepts: z.string().describe(`どの概念について知りたいですか？`),
 });
 
 //https://js.langchain.com/docs/integrations/retrievers/bedrock-knowledge-bases/
@@ -67,7 +67,7 @@ export const retrievePetroleumEngineeringKnowledgeTool = tool(
     },
     {
         name: "retrievePetroleumEngineeringKnowledge",
-        description: "Can retrieve information on many aspects of oil and gas extraction.",
+        description: "石油ガスの生産における多角的な情報を取得できる。",
         schema: retrievePetroleumEngineeringKnowledgeSchema,
     }
 );
@@ -77,9 +77,7 @@ export const retrievePetroleumEngineeringKnowledgeTool = tool(
 //////////////////////////////////////////
 const getTableDefinitionsSchema = z.object({
     tableFeatures: z.string().describe(`
-        Which features of the user's question should be looked for when picking which tables to query? 
-        Include key words and likely SQL query column names.
-        `),
+        ユーザーの質問のどの特徴を見て、クエリを実行するテーブルを選択すべきですか？ キーワードと、可能性のあるSQLクエリのカラム名を含めてください。`),
 });
 
 //https://js.langchain.com/docs/integrations/retrievers/bedrock-knowledge-bases/
@@ -112,7 +110,7 @@ export const getTableDefinitionsTool = tool(
     },
     {
         name: "getTableDefinitionsTool",
-        description: "Always call this tool before executing a SQL query. Can retrieve database table definitons available for SQL queries.",
+        description: "データベースのSQLクエリを実行する前に必ずこのツールを呼び出してください。SQLクエリに利用可能なデータベーステーブルの定義を取得できます。",
         schema: getTableDefinitionsSchema,
     }
 );
@@ -123,18 +121,18 @@ export const getTableDefinitionsTool = tool(
 
 const executeSQLQuerySchema = z.object({
     query: z.string().describe(`
-        The Trino SQL query to be executed.
-        Include the dataSource, database, and tableName in the FROM element (ex: FROM <dataSourceName>.production.daily)
-        Use "" arond all column names.
-        To use date functions on a column with varchar type, cast the column to a date first.
-        The DATE_SUB function is not available. Use the DATE_ADD(unit, value, timestamp) function any time you're adding an interval value to a timestamp. Never use DATE_SUB.
-        <unavailableSqlFunctions> DATE_SUB ILIKE </unavailableSqlFunctions> 
-        Here's an example of how to use the DATE_TRUNC function: DATE_TRUNC('month', CAST("firstDayOfMonth" AS DATE))
-        In the WHERE or GROUP BY causes, do not use column aliases defined in the SELECT clause.
-        Column aliases defined in the SELECT clause cannot be referenced in the WHERE or GROUP BY clauses because they are evaluated before the SELECT clause during query processing.
-        The first column in the returned result will be used as the x axis column. If the query contains a date, set it as the first column.
-        
-        Here's an example sql query for total daily oil, gas and water production
+    実行するTrino SQLクエリ。 FROMエレメントにデータソース、データベース、テーブル名を含めてください。
+    （例：FROM <dataSourceName>.production.daily） 
+    
+    全てのカラム名の周りに""を使用してください。 
+    varchar型のカラムで日付関数を使用する場合は、まずカラムを日付型にキャストしてください。 
+    DATE_SUB関数は利用できません。タイムスタンプに間隔値を追加する場合は、常にDATE_ADD(unit, value, timestamp)関数を使用してください。DATE_SUBは決して使用しないでください。 
+    <利用不可能なSQL関数> DATE_SUB ILIKE </利用不可能なSQL関数> 
+    DATE_TRUNC関数の使用例：DATE_TRUNC('month', CAST("firstDayOfMonth" AS DATE)) 
+    WHEREまたはGROUP BY句では、SELECT句で定義されたカラムエイリアスを使用しないでください。 クエリ処理中にSELECT句の前に評価されるため、SELECT句で定義されたカラムエイリアスはWHEREまたはGROUP BY句で参照できません。 
+    返される結果の最初のカラムがX軸のカラムとして使用されます。クエリに日付が含まれている場合は、それを最初のカラムとして設定してください。
+
+    以下は日次の石油、ガス、水の総生産量に関するSQLクエリの例です。
         <exampleSqlQuery>
         SELECT
             DATE_TRUNC('day', CAST("firstDayOfMonth" AS DATE)) AS day,
@@ -182,8 +180,8 @@ export const executeSQLQueryTool = tool(
                 return {
                     messageContentType: 'tool_json',
                     error: `
-                    DATE_SUB is not allowed in the SQL query. 
-                    Re-write the query and use the DATE_ADD(unit, value, timestamp) function any time you're adding an interval value to a timestamp. Ex: DATE_ADD('year', -5, CURRENT_DATE)
+                    DATE_SUB はこの SQL query では使用できません。クエリを書き直してください。 
+                    また、新しい時刻をデータ間に追加する必要がある場合は、DATE_ADD(unit, value, timestamp) を使用してください。例: DATE_ADD('year', -5, CURRENT_DATE)
                     `.replace(/^\s+/gm, '')
                 } as ToolMessageContentType
             }
@@ -227,9 +225,9 @@ export const executeSQLQueryTool = tool(
     {
         name: "executeSQLQuery",
         description: `
-        Use this tool to retireve structured data, like production rate numbers.
-        Always call the getTableDefinitionsTool before calling this tool. 
-        This tool can execute a Trino SQL query and returns the results as a table.
+        このツールは、構造化データを取得する際に使用します。（構造化データの例: 石油・ガス・水の生産量の数値）
+        このツールを呼び出す前に、必ず getTableDefinitionsTool を呼び出してください。
+        このツールは Trino SQL クエリを実行でき、結果をテーブル形式で返します。
         `.replace(/^\s+/gm, ''),
         schema: executeSQLQuerySchema,
     }
@@ -263,7 +261,7 @@ export const plotTableFromToolResponseTool = tool(
     },
     {
         name: "plotTableFromToolResponseToolBuilder",
-        description: "Plots tabular data returned from previous tool messages",
+        description: "一つ前のツールからのメッセージに含まれるテーブル形式のデータをプロットします。",
         schema: plotTableFromToolResponseSchema,
     }
 );
@@ -304,9 +302,9 @@ export const getS3KeyConentsTool = tool(
     {
         name: "getS3ObjectContents",
         description: `
-        Can return the contents of an individual S3 Key. 
-        Only use this tool to learn about a source file for a row from the wellTableTool. 
-        The wellTableTool should always be called before this tool.`.replace(/^\s+/gm, ''),
+        個々のS3キーの内容を返すことができます。
+        このツールは、wellTableToolから行のソースファイルについて学ぶためにのみ使用してください。
+        このツールを使用する前に、必ずwellTableToolを呼び出す必要があります。`.replace(/^\s+/gm, ''),
         schema: getS3KeyConentsSchema,
     }
 );
@@ -335,9 +333,8 @@ export const wellTableSchema = z.object({
             minimum: z.number().optional(),
             maximum: z.number().optional(),
         })//.optional()
-    })).describe(`The column name and description for each column of the table. 
-        Choose the column best suited for a chart label as the first element.
-        Here's a JSON formatted example table column argument:
+    })).describe(`テーブルの各列の列名と説明。チャートのラベルに最適な列を最初の要素として選択してください。
+        以下はJSON形式のテーブル列引数の例です。
         <exampleTableColumns>
         {
             "tableColumns": [
@@ -368,7 +365,7 @@ export const wellTableSchema = z.object({
         }
         </exampleTableColumns>
         `.replace(/^\s+/gm, '')),
-    wellApiNumber: z.string().describe('The API number of the well to find information about')
+    wellApiNumber: z.string().describe('このAPI番号の坑井についての情報を検索します。')
 });
 
 async function listFilesUnderPrefix(
@@ -479,9 +476,9 @@ export const wellTableTool = tool(
             tableColumns.unshift({
                 columnName: 'includeScore',
                 columnDescription: `
-                    If the JSON object contains information related to [${dataToExclude}], give a score of 1.
-                    If not, give a score of 10 if JSON object contains information related to [${dataToInclude}].
-                    Most scores should be around 5. Reserve 10 for exceptional cases.
+                    もし、JSON object が [${dataToExclude}] に関する情報を含んでいたら、点数を 1 追加します。
+                    もし [${dataToExclude}] に関する情報を含んでおらず、かつ、[${dataToInclude}] に関する情報を含んでいれば、点数を 10 追加します。
+                    大抵は、点数は 5 点程度になります。10 点のものは、特別なケースとして保持します。
                     `,
                 columnDataDefinition: {
                     type: 'integer',
@@ -492,7 +489,7 @@ export const wellTableTool = tool(
 
             tableColumns.unshift({
                 columnName: 'includeScoreExplanation',
-                columnDescription: `Why did you choose that score?`,
+                columnDescription: `なぜこの点数をつけたのですか?`,
                 columnDataDefinition: {
                     type: 'string',
                 }
@@ -500,7 +497,7 @@ export const wellTableTool = tool(
 
             tableColumns.unshift({
                 columnName: 'relevantPartOfJsonObject',
-                columnDescription: `Which part of the object caused you to give that score?`,
+                columnDescription: `どの object がこの点数をつける原因となりましたか？`,
                 columnDataDefinition: {
                     type: 'string',
                 }
@@ -508,7 +505,7 @@ export const wellTableTool = tool(
 
             tableColumns.unshift({
                 columnName: 'date',
-                columnDescription: `The date of the event in YYYY-MM-DD format. Can be null if no date is available.`,
+                columnDescription: `イベントの日付のフォーマットは YYYY-MM-DD です。もし日付がわからない場合は null で構いません。`,
                 columnDataDefinition: {
                     type: ['string', 'null'],
                     format: 'date',
@@ -536,7 +533,7 @@ export const wellTableTool = tool(
             }
             const jsonSchema = {
                 title: "getKeyInformation",
-                description: "Fill out these arguments based on text extracted from a form",
+                description: "フォームから抽出したテキストをもとに、これらの引数を入力してください。",
                 type: "object",
                 properties: fieldDefinitions,
                 required: Object.keys(fieldDefinitions).filter(key => key !== 'date'),
@@ -571,8 +568,8 @@ export const wellTableTool = tool(
                 return {
                     messageContentType: 'tool_json',
                     error: `
-                No files found for well API number: ${wellApiNumber}
-                Available well APIs:\n${s3Folders.join('\n')}
+                    このAPI番号の坑井に関するファイルは見つかりませんでした: ${wellApiNumber}
+                    情報を取得できる坑井のAPI番号は以下です:\n${s3Folders.join('\n')}
                 `
                 } as ToolMessageContentType
             }
@@ -596,8 +593,8 @@ export const wellTableTool = tool(
                         } // If the file contents are empty, do not create a row for that file. The empty file has a length of 22
 
                         const messageText = `
-                        The user is asking you to extract information from a YAML object.
-                        The YAML object contains information about a well.
+                        ユーザーは、あなたに情報をYAML形式で提供することを要求しています。
+                        YAML型式のobjectは、坑井に関する情報を含んでいます。
                         <YamlObject>
                         ${objectContent}
                         </YamlObject>
@@ -667,10 +664,9 @@ export const wellTableTool = tool(
     {
         name: "wellTableTool",
         description: `
-        This tool searches the well files to extract specified information about a well. 
-        Use this tool to retrieve knowledge from well files.
-        Do not use this tool to query production rate numbers.
-        This tool can not query structured data sources.
+        このツールは、坑井に関する特定の情報を抽出するために坑井情報ファイルを検索します。 
+        坑井情報ファイルから知識を取得するにはこのツールを使用してください。
+        石油・ガス・水の生産量の数値を照会する際にはこのツールを絶対に使用してはいけません。このツールは構造化されたデータソースを照会することはできません。
         `.replace(/^\s+/gm, ''),
         schema: wellTableSchema,
     }

@@ -179,25 +179,20 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
 
 
         const replannerPrompt = ChatPromptTemplate.fromTemplate(
-            `For the given objective, come up with a simple step by step plan. 
-            This plan should involve individual tasks, that if executed correctly will yield the correct answer. Do not add any superfluous steps.
-            The result of the final step should be the final answer. Make sure that each step has all the information needed - do not skip steps.
-            Favor assigning the role of ai to human if an available tool may be able to resolve the step.
+            `与えられた目的に対して、シンプルなステップバイステップの計画を日本語で立ててください。 この計画には、正しく実行すれば最終的にユーザーへの正しい回答が得られる個々のタスクを含める必要があります。
+            余分なステップは追加しないでください。 最終ステップの結果が最終的な答えとなるようにしてください。各ステップに必要な情報がすべて含まれていることを確認し、ステップを省略しないでください。 利用可能なツールでステップを解決できる場合は、AIの役割を人間に割り当てることを優先してください。
             
-            Your objective was this:
-            {objective}
+            あなたの目的： {objective}
             
-            Your original plan (if any) was this:
-            {plan}
+            あなたの元の計画（もしあれば）： {plan}
             
-            You have currently done the follow steps:
-            {pastSteps}
+            現在、以下のステップを実行しました： {pastSteps}
             
-            Update your plan accordingly.  
-            Only add steps to the plan that still NEED to be done. Do not return previously done steps as part of the plan.`.replace(/^\s+/gm, ''),
+            それに応じて計画を更新してください。 まだ実行する必要のあるステップのみを計画に追加してください。以前に実行したステップは計画の一部として返さないでください。
+            `.replace(/^\s+/gm, ''),
         );
 
-        const replanner = replannerPrompt.pipe(planningModel);
+        const replanner = replannerPrompt.pipe(planningModel); // プロンプトをモデルに渡す
 
         ///////////////////////////////////////////////
         ///////// Response Step ///////////////////////
