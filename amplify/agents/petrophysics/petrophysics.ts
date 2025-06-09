@@ -69,7 +69,7 @@ export function petrophysicsAgentBuilder(scope: Construct, props: AgentProps) {
     const agentPolicy = new iam.Policy(scope, 'PetrophysicsAgentPolicy', {
         statements: [
             new iam.PolicyStatement({
-                actions: ['bedrock:InvokeModel'],
+                actions: ['bedrock:InvokeModel*', "bedrock:GetInferenceProfile", "bedrock:ListInferenceProfiles"],
                 resources: [
                     `arn:aws:bedrock:${rootStack.region}:${rootStack.account}:inference-profile/*`,
                     `arn:aws:bedrock:us-*::foundation-model/*`,

@@ -173,12 +173,12 @@ const groupChatsByMonth = useCallback((chatSessions: Array<Schema["ChatSession"]
                 // 現在表示中のチャットセッションかどうかを判定
                 const isActive = params?.chatSessionId === chatSession.id;
                 const sidebar_text = chatSession.firstMessageSummary?.slice(0, 50) || '無題のチャット'
-                const sidebar_text_w_style = isActive ? <strong>{sidebar_text}</strong> : <span>{sidebar_text}</span>
                                 
                 return {
                     type: "link",
                     href: `/chat/${chatSession.id}`,
-                    text: sidebar_text_w_style
+                    text: sidebar_text,
+                    info: isActive ? '表示中' : undefined
                 };
             });
             
