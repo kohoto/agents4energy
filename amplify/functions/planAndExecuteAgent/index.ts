@@ -80,10 +80,8 @@ async function publishTokenStreamChunk(props: { tokenStreamChunk: AIMessageChunk
 
 export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = async (event) => {
 
-    // console.log('event: ', event)
-    // console.log('context: ', context)
-    // console.log('Amplify env: ', env)
-    // console.log('process.env: ', process.env)
+    console.log('event: ', event)
+    console.log('process.env: ', process.env)
 
 
     if (!(event.arguments.chatSessionId)) throw new Error("Event does not contain chatSessionId");

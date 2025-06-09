@@ -54,11 +54,12 @@ interface ChatBoxProps {
 const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
     const { chatSession, getGlossary, glossaryBlurbs } = props;
 
-    const [messages, setMessages] = useState<Array<Schema["ChatMessage"]["createType"]>>([]);
+    const [messages, setMessages] = useState<Array<Schema["ChatMessage"]["createType"]>>([]); // useState<> の中身に変更があったら、ChatBox を再描画。けど messages と setMessages は変更しない
     const [, setCharacterStream] = useState<{ content: string, index: number }[]>([{
         content: "\n\n\n",
         index: -1
     }]);
+
     const [characterStreamMessage, setCharacterStreamMessage] = useState<Message>({ role: "ai", content: "", createdAt: new Date().toISOString() });
     const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
     const [userPrompt, setUserPrompt] = useState<string>('');
@@ -196,7 +197,7 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
 
     // This runs when the chat session messages change
     // The blurb below sets the suggested prompts and the isLoading indicator
-    useEffect(() => {
+    useEffect(() => {  //const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {の副作用
         //Reset the character stream when we get a new message
         setCharacterStream(() => {
             console.log("Resetting character stream")
@@ -229,45 +230,50 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
         ) {
             console.log('Ready for human response')
             setIsGenAiResponseLoading(false)
-
-            async function fetchAndSetSuggestedPrompts() {
-                setSuggestedPrompts([])
-                if (!chatSession || !chatSession.id) throw new Error("No active chat session")
-
-                const suggestedPromptsResponse = await amplifyClient.queries.invokeBedrockWithStructuredOutput({
-                    chatSessionId: chatSession.id,
-                    lastMessageText: "ユーザーの会話履歴をもとに、次にユーザーが聞くと良い質問を1～3つ、日本語で考えてください。必ず1～3つの日本語の質問文を提案してください。出力例: 1. 〇〇について詳しく教えてください。2. 〇〇はどのように使いますか？3. 〇〇のメリットは何ですか？ 注意事項: 質問が1つしか思いつかない場合は1つだけでも構いません。",
-                    usePastMessages: true,
-                    outputStructure: JSON.stringify({
-                        title: "RecommendNextPrompt", //title and description help the llm to know how to fill the arguments out
-                        description: "Help the user chose the next prompt to send.",
-                        type: "object",
-                        properties: {// Change anyting in the properties according to the json schema reference: https://json-schema.org/understanding-json-schema/reference
-                            suggestedPrompts: {
-                                type: 'array',
-                                items: {
-                                    type: 'string'
-                                },
-                                minItems: 1,
-                                maxItems: 3,
-                                description: `
-                                    Prompts to suggest to a user when interacting with a large language model
-                                    `
-                            }
-                        },
-                        required: ['suggestedPrompts'],
-                    })
-                })
-                console.log("Suggested Prompts Response: ", suggestedPromptsResponse)
-                if (suggestedPromptsResponse.data) {
-                    const newSuggestedPrompts = jsonParseHandleError(suggestedPromptsResponse.data)
-                    if (newSuggestedPrompts) setSuggestedPrompts(newSuggestedPrompts.suggestedPrompts as string[])
-                } else console.log('No suggested prompts found in response: ', suggestedPromptsResponse)
-            }
-            fetchAndSetSuggestedPrompts()
+            if (!isGenAiResponseLoading == false) fetchAndSetSuggestedPrompts()
+            
         } else if (messages.length) setIsGenAiResponseLoading(true) //This is so if you re-load a page while the agent is processing is loading is set to true.
 
-    }, [messagesString, chatSessionString, suggestedPrompts.length])
+    }, [messagesString, chatSessionString])
+
+
+
+    async function fetchAndSetSuggestedPrompts() {
+        setSuggestedPrompts([])
+        if (!chatSession || !chatSession.id) throw new Error("No active chat session")
+    
+        const suggestedPromptsResponse = await amplifyClient.queries.invokeBedrockWithStructuredOutput({
+            chatSessionId: chatSession.id,
+            lastMessageText: "ユーザーの会話履歴をもとに、次にユーザーが聞くと良い質問を1～3つ、日本語で考えてください。必ず1～3つの日本語の質問文を提案してください。出力例: 1. 〇〇について詳しく教えてください。2. 〇〇はどのように使いますか？3. 〇〇のメリットは何ですか？ 注意事項: 質問が1つしか思いつかない場合は1つだけでも構いません。",
+            usePastMessages: true,
+            outputStructure: JSON.stringify({
+                title: "RecommendNextPrompt", //title and description help the llm to know how to fill the arguments out
+                description: "Help the user chose the next prompt to send.",
+                type: "object",
+                properties: {// Change anyting in the properties according to the json schema reference: https://json-schema.org/understanding-json-schema/reference
+                    suggestedPrompts: {
+                        type: 'array',
+                        items: {
+                            type: 'string'
+                        },
+                        minItems: 1,
+                        maxItems: 3,
+                        description: `
+                            Prompts to suggest to a user when interacting with a large language model
+                            `
+                    }
+                },
+                required: ['suggestedPrompts'],
+            })
+        })
+        
+        console.log("Suggested Prompts Response: ", suggestedPromptsResponse)
+
+        if (suggestedPromptsResponse.data) {
+            const newSuggestedPrompts = jsonParseHandleError(suggestedPromptsResponse.data)
+            if (newSuggestedPrompts) setSuggestedPrompts(newSuggestedPrompts.suggestedPrompts as string[])
+        } else console.log('No suggested prompts found in response: ', suggestedPromptsResponse)
+    }
 
     async function updateChatMessage(props: { message: Message }) {
         const targetChatSessionId = chatSession?.id;
