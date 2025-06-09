@@ -150,7 +150,7 @@ export const handler: Schema["invokeProductionAgent"]["functionHandler"] = async
         )
 
         let currentChunkIndex = 0
-        console.log('Listening for stream events')
+        console.log('productionAgent is listening for stream events')
         for await (const streamEvent of stream) {
             // console.log(`${JSON.stringify(streamEvent, null, 2)}\n---`);
 

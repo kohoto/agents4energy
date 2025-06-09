@@ -20,6 +20,8 @@ import { HumanMessage } from "@langchain/core/messages";
 const s3Client = new S3Client();
 
 export async function queryKnowledgeBase(props: { knowledgeBaseId: string, query: string }) {
+    console.log("Invoking productionAgent/queryKnowledgeBase with query: ", props.query)
+
     const bedrockRuntimeClient = new BedrockAgentRuntimeClient();
 
     const command = new RetrieveCommand({

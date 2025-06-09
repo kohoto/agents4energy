@@ -258,23 +258,25 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
 
             const inputs = {
                 messages: [new HumanMessage(`
-                    The following steps have been completed
+                    現在完了しているタスクは以下です:
                     <previousSteps>
                     ${stringify(state.pastSteps)}
                     </previousSteps>
                     
-                    Now execute this task.
+                    今から以下のタスクを実行してください。:
                     <task>
                     ${stringify(task)}
                     </task>
 
-                    To make plots or tables, use the queryGQL tool.
-                    When creating a table, never use the HTML format.
+                    プロットやテーブルを作成する際は、queryGQL tool を利用してください。
+                    テーブルを作成する際は、絶対に HTML フォーマットは使用しないでください。
+                    ユーザーが日本語で質問した場合は、必ず日本語で出力してください。
+                    ユーザーが英語で質問した場合も、日本語で回答を出力してください。
                     
-                    Tool messages can contain visualizations, query results and tables.
-                    If the tool message says it contains information which completes the task, return a summary to the user.
+                    tool からのメッセージにはプロット、クエリ結果、テーブルが含まれる場合があります。
+                    もし tool からのメッセージでタスクが完了した、と書かれている場合は、このツールの使用結果のまとめをユーザーに出力してください。
                     
-                    Once you have a result for this task, respond with that result.
+                    一度このタスクの結果を得たら、この結果をレスポンスとしてユーザーに返してください。
                     `)],
             };
             const { messages } = await agentExecutor.invoke(inputs, config);

@@ -42,6 +42,7 @@ export const queryGQLToolBuilder = (props: { amplifyClientWrapper: AmplifyClient
 
         switch (queryField) {
             case "invokeBedrock":
+                console.log("!!!!!! Invoking BEDROCK AGENT with text: ", invocationText)
                 const invokeBedrockResponse = await amplifyClientWrapper.amplifyClient.graphql({ //To stream partial responces to the client
                     query: invokeBedrock,
                     variables: {
@@ -101,7 +102,7 @@ export const queryGQLToolBuilder = (props: { amplifyClientWrapper: AmplifyClient
 
                             const mostRecentChatMessage = testChatMessages.data.listChatMessageByChatSessionIdAndCreatedAt.items[0]
 
-                            if (mostRecentChatMessage &&
+                            if (mostRecentChatMessage && //一旦レス終了
                                 mostRecentChatMessage.role === APITypes.ChatMessageRole.ai &&
                                 (getMessageCatigory(mostRecentChatMessage) === 'ai') && //This is a double check incase the tool returns an error, and the error message is picked up as an ai messsage.
                                 (!mostRecentChatMessage.tool_calls || mostRecentChatMessage.tool_calls === "[]") &&
