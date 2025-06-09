@@ -113,7 +113,7 @@ backend.invokeBedrockAgentFunction.resources.lambda.addToRolePolicy(
       `arn:aws:bedrock:${backend.auth.stack.region}::foundation-model/*`,
       `arn:aws:bedrock:us-*::foundation-model/*`,
     ],
-    actions: ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
+    actions: ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:GetInferenceProfile", "bedrock:ListInferenceProfiles"],
   })
 );
 

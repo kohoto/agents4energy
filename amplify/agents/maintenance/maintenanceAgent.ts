@@ -339,7 +339,7 @@ export function maintenanceAgentBuilder(scope: Construct, props: AgentProps) {
         //policyName: 'A4E-MaintAgentPolicy', // Custom policy name
         statements: [
             new iam.PolicyStatement({
-                actions: ['bedrock:InvokeModel'],
+                actions: ['bedrock:InvokeModel*', "bedrock:GetInferenceProfile", "bedrock:ListInferenceProfiles"],
                 resources: [
                     `arn:aws:bedrock:${rootStack.region}:${rootStack.account}:inference-profile/*`,
                     // "arn:aws:bedrock:${rootStack.region}::foundation-model/amazon.nova-lite-v1:0",

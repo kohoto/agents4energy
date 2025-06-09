@@ -192,7 +192,7 @@ export class AuroraBedrockKnoledgeBase extends Construct {
               resources: [this.vectorStorePostgresCluster.secret!.secretArn],
             }),
             new iam.PolicyStatement({
-              actions: ['bedrock:InvokeModel'],
+              actions: ['bedrock:InvokeModel*', "bedrock:GetInferenceProfile", "bedrock:ListInferenceProfiles"],
               resources: [this.embeddingModelArn],
             }),
             new iam.PolicyStatement({

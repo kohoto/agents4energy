@@ -34,12 +34,14 @@ export function petrophysicsAgentBuilder(scope: Construct, props: PetrophysicsAg
         new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
             actions: [
-                'bedrock:InvokeModel',
+                'bedrock:InvokeModel*',
                 'bedrock:Retrieve',
                 'bedrock:ListFoundationModels',
                 'bedrock:ListCustomModels',
                 'bedrock:InvokeAgent',
-                'bedrock:RetrieveAgent'
+                'bedrock:RetrieveAgent',
+                "bedrock:GetInferenceProfile",
+                "bedrock:ListInferenceProfiles"
             ],
             resources: [
                 `arn:aws:bedrock:${cdk.Stack.of(scope).region}::foundation-model/*`,
