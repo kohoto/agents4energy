@@ -179,7 +179,8 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
         const replannerPrompt = ChatPromptTemplate.fromTemplate(
             `与えられた目的に対して、シンプルなステップバイステップの計画を日本語で立ててください。 この計画には、正しく実行すれば最終的にユーザーへの正しい回答が得られる個々のタスクを含める必要があります。
             余分なステップは追加しないでください。 最終ステップの結果が最終的な答えとなるようにしてください。各ステップに必要な情報がすべて含まれていることを確認し、ステップを省略しないでください。 
-            ステップの解決に利用可能なツールがある場合、AIはそのステップを自ら処理しようとせず、ツールの使用を優先してください。
+            ステップの解決に利用可能なツールがある場合、AIはそのステップを自ら処理しようとせず、ツールの使用を優先してください（role: "tool" とする）。
+            ツールが使用できない場合は、role: "ai" としてください。role: "human" は使用しないでください。
             
             あなたの目的： {objective}
             
@@ -198,7 +199,7 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
         ///////////////////////////////////////////////
 
         const responderPrompt = ChatPromptTemplate.fromTemplate(
-            `以下の最初の目的と完了したタスクに従い、マークダウン形式でユーザーに応答してください。：
+            `以下の最初の目的と完了したタスクに従い、マークダウン形式で、日本語でユーザーに応答してください。：
             Your objective was this:
             あなたの最初の目的: {input}
 
