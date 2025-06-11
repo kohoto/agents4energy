@@ -35,13 +35,7 @@ export const productionAgentFunction = defineFunction({
     // MODEL_ID: 'amazon.nova-lite-v1:0'
     FILE_PROCESSING_CONCURRENCY: '50'
   },
-  runtime: 20,
-  resources: () => ({
-  // Lambda関数のメモリサイズを設定
-  function: {
-    memorySize: 4096
-  }
-})
+  runtime: 20
 });
 
 export const planAndExecuteAgentFunction = defineFunction({
