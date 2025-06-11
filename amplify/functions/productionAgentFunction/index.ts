@@ -160,7 +160,7 @@ export const handler: Schema["invokeProductionAgent"]["functionHandler"] = async
                 const streamChunk = streamEvent.data.chunk as AIMessageChunk
                 // const chunkContent = streamEvent.data.chunk.kwargs.content
                 const chunkContent = getLangChainMessageTextContent(streamChunk)
-                console.log("chunkContent: ", chunkContent)
+                // console.log("chunkContent: ", chunkContent)
                 if (chunkContent) {
                     process.stdout.write(chunkContent || "") //Write the chunk to the log
                     await amplifyClientWrapper.amplifyClient.graphql({ //To stream partial responces to the client
