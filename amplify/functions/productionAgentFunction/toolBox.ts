@@ -594,6 +594,41 @@ export const wellTableTool = tool(
                             return
                         } // If the file contents are empty, do not create a row for that file. The empty file has a length of 22
 
+
+                        // リトライ用の関数
+                        async function retryWithBackoff<T>(
+                        fn: () => Promise<T>,
+                        maxRetries: number = 5,
+                        initialDelayMs: number = 1000
+                        ): Promise<T> {
+                            let attempt = 0;
+                            let delay = initialDelayMs;
+
+                            while (true) {
+                                try {
+                                return await fn();
+                                } catch (error: any) {
+                                // Bedrockのレートリミットエラーに該当するか判定
+                                const isRateLimit =
+                                    error?.name === 'ThrottlingException' ||
+                                    error?.$metadata?.httpStatusCode === 429 ||
+                                    error?.name === 'ModelErrorException' ||
+                                    error?.$metadata?.httpStatusCode === 424 || 
+                                    error?.name === 'ServiceUnavailableException' ||
+                                    error?.$metadata?.httpStatusCode === 503;
+
+                                if (!isRateLimit || attempt >= maxRetries) {
+                                    throw error;
+                                }
+
+                                // バックオフしてリトライ
+                                await new Promise((resolve) => setTimeout(resolve, delay));
+                                attempt++;
+                                delay *= 2; // 指数バックオフ
+                                }
+                            }
+                        }
+
                         const messageText = `
                         ユーザーは、あなたに情報をYAML形式で提供することを要求しています。
                         YAML型式のobjectは、坑井に関する情報を含んでいます。
@@ -601,13 +636,14 @@ export const wellTableTool = tool(
                         ${objectContent}
                         </YamlObject>
                         `
-
-                        const fileDataResponse = await getStructuredOutputResponse({
-                            messages: [new HumanMessage({ content: messageText })],
-                            outputStructure: jsonSchema,
-                            modelId: env.STRUCTURED_OUTPUT_MODEL_ID
-                        })
-
+                        // 既存のgetStructuredOutputResponse呼び出し部分を以下のように変更
+                        const fileDataResponse = await retryWithBackoff(() =>
+                            getStructuredOutputResponse({
+                                messages: [new HumanMessage({ content: messageText })],
+                                outputStructure: jsonSchema,
+                                modelId: env.STRUCTURED_OUTPUT_MODEL_ID
+                            })
+                        );
                         //Replace the keys in file Data with those from correctedColumnNameMap
                         Object.keys(fileDataResponse).forEach(key => {
                             if (key in correctedColumnNameMap) {
