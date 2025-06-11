@@ -55,8 +55,8 @@ export default memo(function Messages(
         <div
             className='messages-container'
             style={{
-                height: 'calc(100vh - 400px)',
-                // height: '100%',
+                height: 'calc(100vh - 280px)',
+                //height: '100%',
                 overflow: 'auto',
                 display: 'flex',
                 flexDirection: 'column',

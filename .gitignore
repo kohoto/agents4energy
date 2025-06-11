@@ -44,3 +44,4 @@ next-env.d.ts
 .amplify
 amplify_outputs*
 amplifyconfiguration*
+amplify/data/get_jepx_data_from_csv.py
