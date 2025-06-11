@@ -113,7 +113,7 @@ backend.invokeBedrockAgentFunction.resources.lambda.addToRolePolicy(
       `arn:aws:bedrock:${backend.auth.stack.region}::foundation-model/*`,
       `arn:aws:bedrock:us-*::foundation-model/*`,
     ],
-    actions: ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream", "bedrock:GetInferenceProfile", "bedrock:ListInferenceProfiles"],
+    actions: ["bedrock:InvokeModel*", "bedrock:InvokeModelWithResponseStream", "bedrock:GetInferenceProfile", "bedrock:ListInferenceProfiles"],
   })
 );
 
@@ -123,7 +123,7 @@ backend.getStructuredOutputFromLangchainFunction.resources.lambda.addToRolePolic
       `arn:aws:bedrock:${backend.auth.stack.region}:${backend.auth.stack.account}:inference-profile/*`,
       `arn:aws:bedrock:us-*::foundation-model/*`,
     ],
-    actions: ["bedrock:InvokeModel"],
+    actions: ["bedrock:InvokeModel*", "bedrock:GetInferenceProfile", "bedrock:ListInferenceProfiles"],
   })
 )
 

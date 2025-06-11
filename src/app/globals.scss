@@ -37,7 +37,7 @@ body {
   overflow: hidden;
 }
 .chat-container {
-  height: calc(100vh - 146px);
+  height: calc(100vh - 10px);
   margin-top: 10px;
 }
 .steps:not(:has(.steps)) {

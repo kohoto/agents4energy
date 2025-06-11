@@ -33,7 +33,7 @@ export const productionAgentFunction = defineFunction({
     // MODEL_ID: 'us.anthropic.claude-3-haiku-20240307-v1:0'
     // MODEL_ID: 'us.amazon.nova-pro-v1:0',
     // MODEL_ID: 'amazon.nova-lite-v1:0'
-    FILE_PROCESSING_CONCURRENCY: '10'
+    FILE_PROCESSING_CONCURRENCY: '50'
   },
   runtime: 20
 });

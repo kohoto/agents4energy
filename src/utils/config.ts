@@ -23,19 +23,16 @@ export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGrap
         name: `Production Agent`,
         source: `graphql`,
         samplePrompts: [
-            `This morning well with API number 30-045-29202 stopped producing gas with indication of a hole in tubing.  
-            Make a table of all operational events found in the well files. 
-            Query all historic monthly production rates and make a plot with both the event and production data. 
-            Estimate the value of the well's remaining production. 
-            Write a procedure to repair the well, estimate the cost of the repair, and calculate financial metrics. 
-            Make an executive report about repairing the well with detailed cost and procedure data. 
-            Use the ai role for all steps.
+            `API番号30-045-29202の井戸が今朝、チュービングに穴が開いている兆候があり、ガスの生産が停止しました。
+            坑井ファイルにある全ての運転イベントの表を作成してください。
+            過去の月間生産量データを全て照会し、イベントデータと生産データの両方をプロットしてください。
+            井戸の残存生産量の価値を見積もってください。 井戸を修理する手順を作成し、修理費用を見積もり、財務指標を計算してください。
+            詳細な費用と手順データを含む井戸修理に関する経営報告書を作成してください。 
             `.replace(/^\s+/gm, ''),
-            `Search the well files for the well with API number 30-045-29202 to make a table with type of operation (drilling, completion, workover, plugging, other), text from the report describing operational details, and document title.
-            Also execute a sql query to get the total monthly oil, gas and water production from this well.
-            Create a plot with both the event data and the production data. `.replace(/^\s+/gm, ''), //This trims the white space at the start of each line
-            `Plot the total monthly oil, gas, and water production since 1900 for the well with API number 30-045-29202`,
-            `Which form of artifical lift best matches my personality?`
+            `坑井ファイルからAPI番号30-045-29202の坑井を検索し、作業の種類（掘削、仕上げ、改修、プラグ、その他）、作業詳細を記載した報告書からのテキスト、文書タイトルを含む表を作成してください。
+            また、この坑井からの月間の石油、ガス、水の総生産量を取得するSQLクエリを実行してください。 
+            イベントデータと生産データの両方を含むプロットを作成してください。`.replace(/^\s+/gm, ''), //This trims the white space at the start of each line
+            `1900年以降のAPI番号30-045-29202の坑井における月間の石油、ガス、水の総生産量をプロットしてください。`
         ]
     },
     MaintenanceAgent: {
@@ -44,8 +41,8 @@ export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGrap
         agentId: outputs.custom.maintenanceAgentId,
         agentAliasId: outputs.custom.maintenanceAgentAliasId,
         samplePrompts: [
-            "How many tanks are in my biodiesel unit?",
-            "In September 2024, what are a few key incidents and actions taken at the biodiesel unit?",
+            "社内データによると、バイオディーゼル製造装置には、いくつタンクがありますか？",
+            "2024年9月、バイオディーゼル製造装置で発生した主なトラブルや事故、また、それに対して取られた対策をリストアップしてください。",
         ],
     } as BedrockAgent,
     RegulatoryAgent: {
