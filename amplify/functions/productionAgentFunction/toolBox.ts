@@ -335,7 +335,7 @@ export const wellTableSchema = z.object({
             minimum: z.number().optional(),
             maximum: z.number().optional(),
         })//.optional()
-    })).describe(`テーブルの各列の列名と説明。チャートのラベルに最適な列を最初の要素として選択してください。
+    })).describe(`テーブルの各列の列名と説明。チャートのラベルに最適な列を最初の要素として選択してください。tableColumns のリストは4追加に絞ってください。
         以下はJSON形式のテーブル列引数の例です。
         <exampleTableColumns>
         {
