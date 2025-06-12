@@ -608,6 +608,7 @@ export const wellTableTool = tool(
                                 try {
                                 return await fn();
                                 } catch (error: any) {
+                                    console.log('retryWithBackoff')
                                 // Bedrockのレートリミットエラーに該当するか判定
                                 const isRateLimit =
                                     error?.name === 'ThrottlingException' ||
