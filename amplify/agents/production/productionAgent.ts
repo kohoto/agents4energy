@@ -335,7 +335,14 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         instruction: `あなたは役立つ質問回答アシスタントです。石油工学に関連するユーザーの質問に事実に基づいて正直に回答します。`,
         description: 'Petroleum Engineering Knowledge Base',
     });
-
+   // S3データソースを追加
+    const s3docsDataSource = petroleumEngineeringKnowledgeBase.addS3DataSource({
+        bucket: props.s3Bucket,
+        dataSourceName: "a4e-kb-ds-s3-maint-pigging-repair",
+        inclusionPrefixes: ['maintenance-agent/pigging', 'maintenance-agent/repair'],
+        dataDeletionPolicy: cdkLabsBedrock.DataDeletionPolicy.RETAIN,
+        chunkingStrategy: cdkLabsBedrock.ChunkingStrategy.HIERARCHICAL_TITAN
+    });
     const petroleumEngineeringDataSource = petroleumEngineeringKnowledgeBase.addWebCrawlerDataSource({
         sourceUrls: ['https://oilgas-info.jogmec.go.jp/termlist/'],
         dataDeletionPolicy: cdkLabsBedrock.DataDeletionPolicy.RETAIN,
