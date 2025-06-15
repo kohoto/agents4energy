@@ -336,18 +336,6 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         description: 'Petroleum Engineering Knowledge Base',
     });
 
-    const s3docsDataSource1 = petroleumEngineeringKnowledgeBase.addS3DataSource({
-        bucket: props.s3Bucket,
-        dataSourceName: "a4e-kb-ds-s3-repair",
-        inclusionPrefixes: ['maintenance-agent/repair/'],
-    })
-
-    const s3docsDataSource2 = petroleumEngineeringKnowledgeBase.addS3DataSource({
-        bucket: props.s3Bucket,
-        dataSourceName: "a4e-kb-ds-s3-pigging",
-        inclusionPrefixes: ['maintenance-agent/pigging/'],
-    })
-
     const petroleumEngineeringDataSource = petroleumEngineeringKnowledgeBase.addWebCrawlerDataSource({
         sourceUrls: ['https://oilgas-info.jogmec.go.jp/termlist/'],
         dataDeletionPolicy: cdkLabsBedrock.DataDeletionPolicy.RETAIN,
