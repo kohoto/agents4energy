@@ -170,7 +170,9 @@ export const getStructuredOutputResponse = async (props: {modelId: string, messa
     }).withStructuredOutput(
         props.outputStructure, 
         {includeRaw: true}
-    )
+    ).withRetry({
+        stopAfterAttempt: 3
+    }); 
 
     let structuredOutputResponse = await chatModelWithStructuredOutput.invoke(props.messages)
 

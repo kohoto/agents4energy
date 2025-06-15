@@ -332,16 +332,12 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
 
     const petroleumEngineeringKnowledgeBase = new cdkLabsBedrock.KnowledgeBase(scope, `PetroleumKB`, {//${stackName.slice(-5)}
         embeddingsModel: cdkLabsBedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-        instruction: `You are a helpful question answering assistant. You answer
-        user questions factually and honestly related to petroleum engineering data`,
+        instruction: `あなたは役立つ質問回答アシスタントです。石油工学に関連するユーザーの質問に事実に基づいて正直に回答します。`,
         description: 'Petroleum Engineering Knowledge Base',
     });
 
     const petroleumEngineeringDataSource = petroleumEngineeringKnowledgeBase.addWebCrawlerDataSource({
-        sourceUrls: ['https://petrowiki.spe.org/'],
-        filters: {
-            excludePatterns: ['https://petrowiki\.spe\.org/.+?/.+']//Exclude pages with additional path segments
-        },
+        sourceUrls: ['https://oilgas-info.jogmec.go.jp/termlist/'],
         dataDeletionPolicy: cdkLabsBedrock.DataDeletionPolicy.RETAIN,
         chunkingStrategy: cdkLabsBedrock.ChunkingStrategy.HIERARCHICAL_TITAN
     })
