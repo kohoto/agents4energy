@@ -1,4 +1,3 @@
-
 import { stringify } from "yaml"
 import { Construct } from "constructs";
 import * as cdk from 'aws-cdk-lib'
@@ -338,8 +337,8 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
    // S3データソースを追加
     const s3docsDataSource = petroleumEngineeringKnowledgeBase.addS3DataSource({
         bucket: props.s3Bucket,
-        dataSourceName: "a4e-kb-ds-s3-maint-pigging-repair",
-        inclusionPrefixes: ['maintenance-agent/pigging', 'maintenance-agent/repair'],
+        dataSourceName: "a4e-kb-ds-s3-maint-pigging",
+        inclusionPrefixes: ['maintenance-agent/pigging/'],
         dataDeletionPolicy: cdkLabsBedrock.DataDeletionPolicy.RETAIN,
         chunkingStrategy: cdkLabsBedrock.ChunkingStrategy.HIERARCHICAL_TITAN
     });
@@ -347,7 +346,9 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         sourceUrls: ['https://oilgas-info.jogmec.go.jp/termlist/'],
         dataDeletionPolicy: cdkLabsBedrock.DataDeletionPolicy.RETAIN,
         chunkingStrategy: cdkLabsBedrock.ChunkingStrategy.HIERARCHICAL_TITAN
-    })
+    });
+    
+ 
 
     new cr.AwsCustomResource(scope, 'StartIngestionPetroleumEngineeringDataSource', {
         onCreate: {
