@@ -335,10 +335,17 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         description: 'Petroleum Engineering Knowledge Base',
     });
    // S3データソースを追加
-    const s3docsDataSource = petroleumEngineeringKnowledgeBase.addS3DataSource({
+    const s3docsDataSourcePigging = petroleumEngineeringKnowledgeBase.addS3DataSource({
         bucket: props.s3Bucket,
         dataSourceName: "a4e-kb-ds-s3-maint-pigging",
         inclusionPrefixes: ['maintenance-agent/pigging/'],
+        dataDeletionPolicy: cdkLabsBedrock.DataDeletionPolicy.RETAIN,
+        chunkingStrategy: cdkLabsBedrock.ChunkingStrategy.HIERARCHICAL_TITAN
+    });
+    const s3docsDataSourceRepair = petroleumEngineeringKnowledgeBase.addS3DataSource({
+        bucket: props.s3Bucket,
+        dataSourceName: "a4e-kb-ds-s3-maint-repair",
+        inclusionPrefixes: ['maintenance-agent/repair/'],
         dataDeletionPolicy: cdkLabsBedrock.DataDeletionPolicy.RETAIN,
         chunkingStrategy: cdkLabsBedrock.ChunkingStrategy.HIERARCHICAL_TITAN
     });
