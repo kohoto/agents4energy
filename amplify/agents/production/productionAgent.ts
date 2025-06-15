@@ -336,13 +336,13 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
         description: 'Petroleum Engineering Knowledge Base',
     });
 
-    petroleumEngineeringKnowledgeBase.addS3DataSource({
+    const s3docsDataSource1 = petroleumEngineeringKnowledgeBase.addS3DataSource({
         bucket: props.s3Bucket,
         dataSourceName: "a4e-kb-ds-s3-repair",
         inclusionPrefixes: ['maintenance-agent/repair/'],
     })
 
-    petroleumEngineeringKnowledgeBase.addS3DataSource({
+    const s3docsDataSource2 = petroleumEngineeringKnowledgeBase.addS3DataSource({
         bucket: props.s3Bucket,
         dataSourceName: "a4e-kb-ds-s3-pigging",
         inclusionPrefixes: ['maintenance-agent/pigging/'],
