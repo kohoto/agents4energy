@@ -55,7 +55,7 @@ export const retrievePetroleumEngineeringKnowledgeTool = tool(
     async ({ concepts }) => {
 
         const contextResponse = await queryKnowledgeBase({
-            knowledgeBaseId: env.PETROLEUM_ENG_KNOWLEDGE_BASE_ID,
+            knowledgeBaseId: env.PETROLEUM_ENG_KNOWLEDGE_BASE_ID, // petroleum KB への問合せ
             query: concepts
         })
 
@@ -69,7 +69,7 @@ export const retrievePetroleumEngineeringKnowledgeTool = tool(
     },
     {
         name: "retrievePetroleumEngineeringKnowledge",
-        description: "石油ガスの生産における多角的な情報を取得できる。",
+        description: "以下の3つに関する情報を取得できます。: 1. 石油ガス開発における業界用語、石油ガス開発における修理/メンテナンス用語、petrophysicsの専門用語、掘削の専門用語 2. パイプラインの漏洩事故の詳細、修理の詳細、修理のコスト 3. ピグ作業の詳細、費用",
         schema: retrievePetroleumEngineeringKnowledgeSchema,
     }
 );

@@ -200,7 +200,6 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
 
         const responderPrompt = ChatPromptTemplate.fromTemplate(
             `以下の最初の目的と完了したタスクに従い、マークダウン形式で、日本語でユーザーに応答してください。：
-            Your objective was this:
             あなたの最初の目的: {input}
 
             あなたの次のステップ (もしあれば): {plan}
