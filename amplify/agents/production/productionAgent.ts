@@ -331,7 +331,9 @@ export function productionAgentBuilder(scope: Construct, props: ProductionAgentP
 
     const petroleumEngineeringKnowledgeBase = new cdkLabsBedrock.KnowledgeBase(scope, `PetroleumKB`, {//${stackName.slice(-5)}
         embeddingsModel: cdkLabsBedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V2_1024,
-        instruction: `あなたは役立つ質問回答アシスタントです。石油工学に関連するユーザーの質問に事実に基づいて正直に回答します。`,
+        instruction: `あなたは役立つ質問回答アシスタントです。
+                    石油工学に関連するユーザーの質問に、あなたが参照できる情報（S3のデータとクロールできる webサイト）のみに基づいて正直に回答します。
+                    あなたが参照できる情報に回答に関する情報が見つからない場合は。「この質問には回答できません。データベースにこのトピックに関係する情報が存在しません。」`,
         description: 'Petroleum Engineering Knowledge Base',
     });
    // S3データソースを追加
