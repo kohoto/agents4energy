@@ -197,7 +197,7 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
             注意:
             以下のような単純な質問に対しては、複数ステップを持ちず、単一のステップで Knowledge Bases から情報を取得して回答してください。
             - 「XX は何ですか？」
-            - 「{専門用語} について教えて」
+            - 「XX について教えて」
             `.replace(/^\s+/gm, ''),
         );
 
