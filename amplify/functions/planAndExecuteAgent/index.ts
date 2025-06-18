@@ -176,9 +176,11 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
         ///////////////////////////////////////////////
 
 
-        const replannerPrompt = ChatPromptTemplate.fromTemplate(
-            `与えられた目的に対して、シンプルなステップバイステップの計画を日本語で立ててください。 この計画には、正しく実行すれば最終的にユーザーへの正しい回答が得られる個々のタスクを含める必要があります。
-            余分なステップは追加しないでください。 最終ステップの結果が最終的な答えとなるようにしてください。各ステップに必要な情報がすべて含まれていることを確認し、ステップを省略しないでください。 
+        const replannerPrompt = ChatPromptTemplate.fromTemplate(`
+            与えられた目的に対して、シンプルなステップバイステップの計画を日本語で立ててください。
+            この計画には、正しく実行すれば最終的にユーザーへの正しい回答が得られる個々のタスクを含める必要があります。
+            余分なステップは追加しないでください。 
+            最終ステップの結果が最終的な答えとなるようにしてください。各ステップに必要な情報がすべて含まれていることを確認し、ステップを省略しないでください。 
             ステップの解決に利用可能なツールがある場合、AIはそのステップを自ら処理しようとせず、ツールの使用を優先してください（role: "tool" とする）。
             ツールが使用できない場合は、role: "ai" としてください。role: "human" は使用しないでください。
             
@@ -188,7 +190,14 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
             
             現在、以下のステップを実行しました： {pastSteps}
             
-            それに応じて計画を更新してください。 まだ実行する必要のあるステップのみを計画に追加してください。以前に実行したステップは計画の一部として返さないでください。
+            それに応じて計画を更新してください。
+            まだ実行する必要のあるステップのみを計画に追加してください。
+            以前に実行したステップは計画の一部として返さないでください。
+
+            注意:
+            以下のような単純な質問に対しては、複数ステップを持ちず、単一のステップで Knowledge Bases から情報を取得して回答してください。
+            - 「XX は何ですか？」
+            - 「{専門用語} について教えて」
             `.replace(/^\s+/gm, ''),
         );
 
@@ -199,7 +208,8 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
         ///////////////////////////////////////////////
 
         const responderPrompt = ChatPromptTemplate.fromTemplate(
-            `以下の最初の目的と完了したタスクに従い、マークダウン形式で、日本語でユーザーに応答してください。：
+            `以下の最初の目的と完了したタスクに従い、マークダウン形式で、日本語でユーザーに応答してください。
+            API番号という言葉は、すべて「施設管理番号」という言葉に置き換えてください：
             あなたの最初の目的: {input}
 
             あなたの次のステップ (もしあれば): {plan}
@@ -211,13 +221,13 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
 
         const response = zodToJsonSchema(
             z.object({
-                response: z.string().describe("Response to user in markdown format."),
+                response: z.string().describe("マークダウン形式で、日本語でユーザーに応答"),
             }),
         );
 
         const responderModel = agentModel.withStructuredOutput(response);
 
-        const responder = responderPrompt.pipe(responderModel)
+        const responder = responderPrompt.pipe(responderModel) // 返答を作成。RespondStep で使われる
 
 
 
