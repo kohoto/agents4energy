@@ -367,7 +367,7 @@ export const wellTableSchema = z.object({
         }
         </exampleTableColumns>
         `.replace(/^\s+/gm, '')),
-    wellApiNumber: z.string().describe('このAPI番号の坑井についての情報を検索します。')
+    wellApiNumber: z.string().describe('この設備管理番号（API番号）の坑井についての情報を検索します。')
 });
 
 async function listFilesUnderPrefix(
@@ -703,8 +703,8 @@ export const wellTableTool = tool(
     {
         name: "wellTableTool",
         description: `
-        このツールは、坑井に関する特定の情報を抽出するために坑井情報ファイルを検索します。 
-        坑井情報ファイルから知識を取得するにはこのツールを使用してください。
+        このツールは、ガスパイプラインに関する特定の情報を抽出するためにガスパイプラインのメンテナンスと点検に関するドキュメントを検索します。 
+        ガスパイプラインのメンテナンスと点検に関するドキュメントから知識を取得するにはこのツールを使用してください。
         石油・ガス・水の生産量の数値を照会する際にはこのツールを絶対に使用してはいけません。このツールは構造化されたデータソースを照会することはできません。
         `.replace(/^\s+/gm, ''),
         schema: wellTableSchema,
