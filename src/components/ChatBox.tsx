@@ -230,7 +230,7 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
         ) {
             console.log('Ready for human response')
             setIsGenAiResponseLoading(false)
-            if (!isGenAiResponseLoading == false) fetchAndSetSuggestedPrompts()
+            // if (!isGenAiResponseLoading == false) fetchAndSetSuggestedPrompts()
             
         } else if (messages.length) setIsGenAiResponseLoading(true) //This is so if you re-load a page while the agent is processing is loading is set to true.
 
