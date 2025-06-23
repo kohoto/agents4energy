@@ -238,42 +238,42 @@ const ChatBox: React.FC<ChatBoxProps> = (props: ChatBoxProps) => {
 
 
 
-    async function fetchAndSetSuggestedPrompts() {
-        setSuggestedPrompts([])
-        if (!chatSession || !chatSession.id) throw new Error("No active chat session")
+    // async function fetchAndSetSuggestedPrompts() {
+    //     setSuggestedPrompts([])
+    //     if (!chatSession || !chatSession.id) throw new Error("No active chat session")
     
-        const suggestedPromptsResponse = await amplifyClient.queries.invokeBedrockWithStructuredOutput({
-            chatSessionId: chatSession.id,
-            lastMessageText: "ユーザーの会話履歴をもとに、次にユーザーが聞くと良い質問を1～3つ、日本語で考えてください。必ず1～3つの日本語の質問文を提案してください。出力例: 1. 〇〇について詳しく教えてください。2. 〇〇はどのように使いますか？3. 〇〇のメリットは何ですか？ 注意事項: 質問が1つしか思いつかない場合は1つだけでも構いません。",
-            usePastMessages: true,
-            outputStructure: JSON.stringify({
-                title: "RecommendNextPrompt", //title and description help the llm to know how to fill the arguments out
-                description: "Help the user chose the next prompt to send.",
-                type: "object",
-                properties: {// Change anyting in the properties according to the json schema reference: https://json-schema.org/understanding-json-schema/reference
-                    suggestedPrompts: {
-                        type: 'array',
-                        items: {
-                            type: 'string'
-                        },
-                        minItems: 1,
-                        maxItems: 3,
-                        description: `
-                            Prompts to suggest to a user when interacting with a large language model
-                            `
-                    }
-                },
-                required: ['suggestedPrompts'],
-            })
-        })
+    //     const suggestedPromptsResponse = await amplifyClient.queries.invokeBedrockWithStructuredOutput({
+    //         chatSessionId: chatSession.id,
+    //         lastMessageText: "ユーザーの会話履歴をもとに、次にユーザーが聞くと良い質問を1～3つ、日本語で考えてください。必ず1～3つの日本語の質問文を提案してください。出力例: 1. 〇〇について詳しく教えてください。2. 〇〇はどのように使いますか？3. 〇〇のメリットは何ですか？ 注意事項: 質問が1つしか思いつかない場合は1つだけでも構いません。",
+    //         usePastMessages: true,
+    //         outputStructure: JSON.stringify({
+    //             title: "RecommendNextPrompt", //title and description help the llm to know how to fill the arguments out
+    //             description: "Help the user chose the next prompt to send.",
+    //             type: "object",
+    //             properties: {// Change anyting in the properties according to the json schema reference: https://json-schema.org/understanding-json-schema/reference
+    //                 suggestedPrompts: {
+    //                     type: 'array',
+    //                     items: {
+    //                         type: 'string'
+    //                     },
+    //                     minItems: 1,
+    //                     maxItems: 3,
+    //                     description: `
+    //                         Prompts to suggest to a user when interacting with a large language model
+    //                         `
+    //                 }
+    //             },
+    //             required: ['suggestedPrompts'],
+    //         })
+    //     })
         
-        console.log("Suggested Prompts Response: ", suggestedPromptsResponse)
+    //     console.log("Suggested Prompts Response: ", suggestedPromptsResponse)
 
-        if (suggestedPromptsResponse.data) {
-            const newSuggestedPrompts = jsonParseHandleError(suggestedPromptsResponse.data)
-            if (newSuggestedPrompts) setSuggestedPrompts(newSuggestedPrompts.suggestedPrompts as string[])
-        } else console.log('No suggested prompts found in response: ', suggestedPromptsResponse)
-    }
+    //     if (suggestedPromptsResponse.data) {
+    //         const newSuggestedPrompts = jsonParseHandleError(suggestedPromptsResponse.data)
+    //         if (newSuggestedPrompts) setSuggestedPrompts(newSuggestedPrompts.suggestedPrompts as string[])
+    //     } else console.log('No suggested prompts found in response: ', suggestedPromptsResponse)
+    // }
 
     async function updateChatMessage(props: { message: Message }) {
         const targetChatSessionId = chatSession?.id;
