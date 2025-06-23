@@ -208,13 +208,11 @@ export const queryGQLToolBuilder = (props: { amplifyClientWrapper: AmplifyClient
         name: "queryGQL",
         description: `
         GraphQL APIにクエリを実行できます。 以下の目的でinvokeProductionAgentにクエリを実行:
-        - 坑井データのプロットや可視化の作成 (plotProductionToolの呼び出しを含む)
-        - 石油工学の一般的な知識
-        - 坑井ファイル、生産量データベースなどのデータソースからの坑井データ収集
-        - 坑井の問題診断
-        - 坑井修理の手順
-        - 修理費用の見積もり
-        - 財務リターンの見積もり
+        - 石油・ガス・水の生産データのプロットや可視化の作成 (plotProductionToolの呼び出しを含む)
+        - 石油工学・パイプランメンテナンスの一般的な専門用語の定義、社内の事故対応マニュアルの取得 (retrievePetroleumEngineeringKnowledgeTool の呼び出しを含む)
+        - 過去のメンテナンス履歴、生産量データベースなどのデータソースからの坑井データ収集 (wellTableTool の呼び出しを含む)
+        - 過去のメンテナンス履歴や社内のマニュアルを考慮したうえでの、ガスパイプライン修理手順の提案
+        - 過去のメンテナンス履歴や社内のマニュアルを考慮したうえでの、修理費用の概算の提示
         `.replaceAll(/^\s+/gm, ''),
         schema: queryGQLScheama,
     }

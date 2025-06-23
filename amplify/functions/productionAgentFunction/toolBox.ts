@@ -346,13 +346,10 @@ export const wellTableSchema = z.object({
                     "columnDataDefinition": {
                         "type": "string",
                         "enum": [
-                            "Drilling",
-                            "Stimulation",
-                            "Workover",
-                            "Plugging",
-                            "Legal",
-                            "Inspection",
-                            "Other"
+                            "修理",
+                            "規制",
+                            "点検",
+                            "その他"
                         ]
                     }
                 },
@@ -367,7 +364,7 @@ export const wellTableSchema = z.object({
         }
         </exampleTableColumns>
         `.replace(/^\s+/gm, '')),
-    wellApiNumber: z.string().describe('この設備管理番号（API番号）の坑井についての情報を検索します。')
+    wellApiNumber: z.string().describe('この設備管理番号（API番号）のガスパイプラインについての情報を検索します。')
 });
 
 async function listFilesUnderPrefix(
@@ -632,7 +629,7 @@ export const wellTableTool = tool(
 
                         const messageText = `
                         ユーザーは、あなたに情報をYAML形式で提供することを要求しています。
-                        YAML型式のobjectは、坑井に関する情報を含んでいます。
+                        YAML型式のobjectは、ガスパイプラインに関する情報を含んでいます。
                         <YamlObject>
                         ${objectContent}
                         </YamlObject>
