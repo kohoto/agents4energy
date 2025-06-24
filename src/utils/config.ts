@@ -20,7 +20,7 @@ export type LangGraphAgent = BaseAgent & {
 
 export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGraphAgent } = {
     PlanAndExecuteAgent: {
-        name: `Production Agent`,
+        name: `プラント ガスパイプライン エージェント（デモで使用）`,
         source: `graphql`,
         samplePrompts: [
             '「ピグ作業」について教えて',
@@ -39,7 +39,7 @@ export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGrap
         ]
     },
     MaintenanceAgent: {
-        name: "Maintenance Agent",
+        name: "メンテナンスエージェント",
         source: "bedrockAgent",
         agentId: outputs.custom.maintenanceAgentId,
         agentAliasId: outputs.custom.maintenanceAgentAliasId,
@@ -49,7 +49,7 @@ export const defaultAgents: { [key: string]: BaseAgent | BedrockAgent | LangGrap
         ],
     } as BedrockAgent,
     RegulatoryAgent: {
-        name: "Regulatory Agent",
+        name: "規制エージェント",
         source: "bedrockAgent",
         agentId: outputs.custom.regulatoryAgentId,
         agentAliasId: outputs.custom.regulatoryAgentAliasId,
