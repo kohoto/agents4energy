@@ -182,6 +182,7 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
             余分なステップは追加しないでください。 
             最終ステップの結果が最終的な答えとなるようにしてください。各ステップに必要な情報がすべて含まれていることを確認し、ステップを省略しないでください。 
             ステップの解決に利用可能なツールがある場合、AIはそのステップを自ら処理しようとせず、ツールの使用を優先してください（role: "tool" とする）。
+            各ツールは、計画の中でそれぞれ1度しか使うことができません。
             ツールが使用できない場合は、role: "ai" としてください。role: "human" は使用しないでください。
             
             あなたの目的： {objective}
@@ -287,6 +288,11 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
                     `)],
             };
             const { messages } = await agentExecutor.invoke(inputs, config);
+            // ツールの実行結果を確認
+            if (messages.some(msg => msg.additional_kwargs?.tool_use && 
+                !messages[messages.indexOf(msg) + 1]?.additional_kwargs?.tool_result)) {
+                throw new Error("Tool execution result is missing");
+            }
             const resultText = getLangChainMessageTextContent(messages.slice(-1)[0]) || ""
             console.log("Execute Step Complete. Result Text:\n", resultText)
 
