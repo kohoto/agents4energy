@@ -329,7 +329,7 @@ export default function ChatUIMessage(props: ChatUIMessageProps) {
                 tooltipFormat: 'PP',
                 displayFormats: {
                   // day のフォーマット: m/d hh:mm
-                  day: 'YYYY/M',                
+                  day: 'yyyy/M',                
                 },
               },
               title: {
