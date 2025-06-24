@@ -288,11 +288,6 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
                     `)],
             };
             const { messages } = await agentExecutor.invoke(inputs, config);
-            // ツールの実行結果を確認
-            if (messages.some(msg => msg.additional_kwargs?.tool_use && 
-                !messages[messages.indexOf(msg) + 1]?.additional_kwargs?.tool_result)) {
-                throw new Error("Tool execution result is missing");
-            }
             const resultText = getLangChainMessageTextContent(messages.slice(-1)[0]) || ""
             console.log("Execute Step Complete. Result Text:\n", resultText)
 
