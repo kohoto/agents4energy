@@ -195,7 +195,7 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
             以前に実行したステップは計画の一部として返さないでください。
 
             注意:
-            以下のような単純な質問に対しては、複数ステップを持ちず、単一のステップで Knowledge Bases から情報を取得して回答してください。
+            以下のような言葉の定義を尋ねる質問に対しては、複数ステップを作成せず、単一のステップで productionAgent の retrievePetroleumEngineeringKnowledgeSchema から情報を取得して回答してください。
             - 「XX は何ですか？」
             - 「XX について教えて」
             `.replace(/^\s+/gm, ''),
@@ -282,7 +282,6 @@ export const handler: Schema["invokePlanAndExecuteAgent"]["functionHandler"] = a
                     ユーザーが英語で質問した場合も、日本語で回答を出力してください。
                     
                     tool からのメッセージにはプロット、クエリ結果、テーブルが含まれる場合があります。
-                    もし tool からのメッセージでタスクが完了した、と書かれている場合は、このツールの使用結果のまとめをユーザーに出力してください。
                     
                     一度このタスクの結果を得たら、この結果をレスポンスとしてユーザーに返してください。
                     `)],

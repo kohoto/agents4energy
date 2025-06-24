@@ -23,16 +23,15 @@ const queryGQLScheama = z.object({
     queryField: z
         .enum(["invokeBedrock", "invokeProductionAgent"]).describe(`
             以下の用途でinvokeProductionAgentを使用してください:
-            - 石油工学の一般的な知識
-            - 坑井ファイルや生産量データベースなどのデータソースからの坑井データ収集
-            - 坑井の問題診断
-            - 坑井修理の手順
-            - 修理費用の見積もり
-            - 収益性の見積もり
+            - 石油工学・パイプランメンテナンスの一般的な専門用語の定義、社内の事故対応マニュアルの取得
+            - 石油・ガス・水の生産データのプロットや可視化の作成 (plotProductionToolの呼び出しを含む)
+            - 過去のメンテナンス履歴、生産量データベースなどのデータソースからの坑井データ収集 (wellTableTool の呼び出しを含む)
+            - 過去のメンテナンス履歴や社内のマニュアルを考慮したうえでの、ガスパイプライン修理手順の提案
+            - 過去のメンテナンス履歴や社内のマニュアルを考慮したうえでの、修理費用の概算の提示
             `.replace(/^\s+/gm, '')),
     invocationText: z.string().describe(`
         エージェントを呼び出すために使用するテキスト。 invokeProductionAgent を呼び出す際：
-        - 対象となる坑井のAPI番号を必ず指定してください
+        - 対象となるガスパイプラインのAPI番号（設備管理番号）を必ず指定してください
         `.replace(/^\s+/gm, '')),
 });
 
